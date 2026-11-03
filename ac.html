@@ -207,10 +207,11 @@ body.ar-lage .wrap{padding-bottom:40px}
 <div class="vantar" id="vantar" style="display:none"><b>Väntar på Arvakos signering.</b> Arvakos del (projekteringen och Arvakos signatur) fylls i när dokumentet kommit in. Dokumentet går till kunden först därefter.</div>
 
 <section class="forbered" id="forbered" hidden>
-  <h2>Godkänn och skapa länk</h2>
-  <p class="hjalp">Ditt namn och datum är din underskrift. I dokumentet står det <i>Godkänt elektroniskt av Arvako Energi AB</i> med namn och datum. Länken öppnar formuläret med projektet och Arvakos rader ifyllda och låsta; elektrikern fyller i resten och skickar ett komplett dokument. Lägg länken som knapp i UE-underlaget.</p>
-  <div class="rader"><div class="f"><label>Godkänt av</label><input id="fb-namn" value="Ola Böving"></div><div class="f"><label>Datum</label><input id="fb-datum" type="date"></div></div>
-  <div style="margin-top:10px"><button type="button" id="fb-skapa" style="font:inherit;font-size:14px;padding:10px 16px;border-radius:8px;border:1px solid var(--gron);background:var(--gron);color:#fff;cursor:pointer">Skapa länk</button></div>
+  <h2>Signera som projektör och skapa länk</h2>
+  <p class="hjalp">Här signerar du Arvakos del. Namn, datum och intyget blir din elektroniska signatur; i dokumentet står den i rutan <i>Projekteringen — Arvako Energi AB</i>. Länken öppnar formuläret med projektet och Arvakos rader ifyllda och låsta; elektrikern fyller i resten och skickar ett komplett dokument. Lägg länken som knapp i UE-underlaget.</p>
+  <div class="rader"><div class="f"><label>Projektör, namnförtydligande</label><input id="fb-namn" value="Ola Böving"></div><div class="f"><label>Datum</label><input id="fb-datum" type="date"></div></div>
+  <label class="intyg"><input type="checkbox" id="fb-intyg"> <span>Jag intygar att raderna under Projektering är kontrollerade och stämmer för projektet.</span></label>
+  <div style="margin-top:10px"><button type="button" id="fb-skapa" style="margin-top:4px;font:inherit;font-size:14px;padding:10px 16px;border-radius:8px;border:1px solid var(--gron);background:var(--gron);color:#fff;cursor:pointer">Signera och skapa länk</button></div>
   <div id="fb-resultat" hidden style="margin-top:10px"><textarea id="fb-ut" readonly></textarea><button type="button" class="rensa" id="fb-kopiera">Kopiera länken</button></div>
 </section>
 
@@ -744,7 +745,7 @@ function b64url(str){const by=new TextEncoder().encode(str);let bin='';by.forEac
 async function skapaLank(){
   const arRader=synligaRader().filter(arRad);
   const ej=arRader.filter(r=>!(S.ar[r[0]]||{}).s).map(r=>vn(r[0]));
-  const sak=[];if(!S.projektnamn)sak.push('projekt');if(!S.adress)sak.push('adress');if(CFG.scen&&!S.scen)sak.push('vilket jobb');if(ej.length)sak.push('Arvakos rader '+ej.join(', '));if(!$('#fb-namn').value.trim())sak.push('namn');
+  const sak=[];if(!S.projektnamn)sak.push('projekt');if(!S.adress)sak.push('adress');if(CFG.scen&&!S.scen)sak.push('vilket jobb');if(ej.length)sak.push('Arvakos rader '+ej.join(', '));if(!$('#fb-namn').value.trim())sak.push('namn');if(!$('#fb-intyg').checked)sak.push('intyget');
   if(sak.length){await meddela('Fyll i först: '+sak.join(', ')+'.');return}
   const p={typ:CFG.typ};PFALT.forEach(k=>{if(S[k])p[k]=S[k]});
   if(CFG.scen){p.scen=S.scen;const tv={};Object.keys(S.tillval).forEach(k=>{if(S.tillval[k])tv[k]=1});p.tillval=tv}
@@ -764,7 +765,7 @@ function visaForifyllt(){
     const f=x=>document.querySelector(`[data-ar-f="${x}"]`);
     f('namn').textContent=P.arnamn;f('namn').classList.add('satt');
     f('datum').textContent=P.ardatum||'';f('datum').classList.add('satt');
-    f('sig').innerHTML=`<div class="ar-esign">Godkänt elektroniskt av Arvako Energi AB<br>${esc(P.arnamn)} · ${esc(P.ardatum||'')}</div>`;
+    f('sig').innerHTML=`<div class="ar-esign">Signerat elektroniskt av projektören, Arvako Energi AB<br>${esc(P.arnamn)} · ${esc(P.ardatum||'')}</div>`;
     const t=$('#ar-signtid');if(t)t.textContent='Godkänt av Arvako innan arbetet.';
     const lb=$('#layoutbild');if(lb)lb.innerHTML='<span>Stränglayouten finns i UE-underlaget för projektet.</span>';
     const lh=$('#layout-hjalp');if(lh)lh.textContent='Stränglayouten finns i UE-underlaget från Arvako. Bekräfta att den är byggd så, eller beskriv ändringen och ta en bild.';
