@@ -298,7 +298,7 @@ body.ar-lage .wrap{padding-bottom:40px}
   <div class="box" id="ar-signbox" style="margin-top:12px">
     <b>Projekteringen — Arvako Energi AB</b>
     <small>Arvako Energi AB, org.nr 559528-2897, leverantör och projektör. Intygar raderna under Projektering. <span id="ar-signtid">Signeras av Arvako när dokumentet kommit in.</span></small>
-    <div class="rader"><div class="f"><label>Projektör</label><span class="ar-plats" data-ar-f="namn">Fylls i av Arvako</span></div><div class="f"><label>Datum</label><span class="ar-plats" data-ar-f="datum">—</span></div></div>
+    <div class="rader"><div class="f"><label>Projektör</label><span class="ar-plats" data-ar-f="namn">Fylls i av Arvako vid granskningen</span></div><div class="f"><label>Datum</label><span class="ar-plats" data-ar-f="datum">—</span></div></div>
     <div data-ar-f="sig" style="margin-top:8px"></div>
   </div>
   <p class="hjalp" style="margin-top:10px">Dokumentet mejlas till Arvako senast dagen efter driftsättningen och ingår i kundens slutdokumentation.</p>
@@ -551,7 +551,7 @@ function renderCheck(){
         }
         const a=P&&P.ar&&P.ar[nr];
         d.innerHTML=`<div class="nr">${vn(nr)}</div><div class="txt">${txt}<span class="ans">Arvako</span></div>
-          <div class="linje">${a?`<span class="ar-status satt ${esc(a.s)}" data-ar-rad="${nr}">${STATUSTXT[a.s]||''}</span><span class="ar-kom" data-ar-kom="${nr}">${esc(a.k)}</span>`:`<span class="ar-status" data-ar-rad="${nr}">Fylls i av Arvako</span><span class="ar-kom" data-ar-kom="${nr}"></span>`}</div>`;
+          <div class="linje">${a?`<span class="ar-status satt ${esc(a.s)}" data-ar-rad="${nr}">${STATUSTXT[a.s]||''}</span><span class="ar-kom" data-ar-kom="${nr}">${esc(a.k)}</span>`:`<span class="ar-status" data-ar-rad="${nr}">Fylls i av Arvako vid granskningen</span><span class="ar-kom" data-ar-kom="${nr}"></span>`}</div>`;
         s.appendChild(d);continue;
       }
       const knappar=o.alt
@@ -768,10 +768,10 @@ function visaForifyllt(){
     f('datum').textContent=P.ardatum||'';f('datum').classList.add('satt');
     f('sig').innerHTML=`<div class="ar-esign">Signerat elektroniskt av projektören, Arvako Energi AB<br>${esc(P.arnamn)} · ${esc(P.ardatum||'')}</div>`;
     const t=$('#ar-signtid');if(t)t.textContent='Godkänt av Arvako innan arbetet.';
-    const lb=$('#layoutbild');if(lb)lb.innerHTML=P.layout?`<img src="${P.layout}" alt="Stränglayout" style="max-width:100%;max-height:420px;display:block;border-radius:6px">`:'<span>Stränglayouten finns i UE-underlaget för projektet.</span>';
-    const lh=$('#layout-hjalp');if(lh)lh.textContent=P.layout?'Stränglayouten från platsbesöket. Bekräfta att den är byggd så, eller beskriv ändringen och ta en bild.':'Stränglayouten finns i UE-underlaget från Arvako. Bekräfta att den är byggd så, eller beskriv ändringen och ta en bild.';
   }
-  const i=$('#intro');if(i)i.insertAdjacentHTML('afterbegin','<p class="forifyllt-info"><b>Förifyllt av Arvako:</b> projektet och Arvakos rader är redan ifyllda. Du fyller i dina rader, bilderna och signerar.</p>');
+  const lb=$('#layoutbild');if(lb)lb.innerHTML=P.layout?`<img src="${P.layout}" alt="Stränglayout" style="max-width:100%;max-height:420px;display:block;border-radius:6px">`:'<span>Stränglayouten finns i UE-underlaget för projektet.</span>';
+  const lh=$('#layout-hjalp');if(lh)lh.textContent=P.layout?'Stränglayouten från platsbesöket. Bekräfta att den är byggd så, eller beskriv ändringen och ta en bild.':'Stränglayouten finns i UE-underlaget från Arvako. Bekräfta att den är byggd så, eller beskriv ändringen och ta en bild.';
+  const i=$('#intro');if(i)i.insertAdjacentHTML('afterbegin',P.arnamn?'<p class="forifyllt-info"><b>Förifyllt av Arvako:</b> projektet och Arvakos rader är redan ifyllda. Du fyller i dina rader, bilderna och signerar.</p>':'<p class="forifyllt-info"><b>Förifyllt av Arvako:</b> projektuppgifterna är redan ifyllda. Du fyller i dina rader, bilderna och signerar — Arvako fyller i projekteringens rader vid granskningen.</p>');
 }
 
 /* ---------- start ---------- */
