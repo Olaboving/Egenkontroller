@@ -1,0 +1,748 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Egenkontroll solcellsmontage</title>
+<style>
+/* Arvakos egenkontrollformulär, länkversion. */
+:root{
+  --bg:#f3f4f6; --yta:#fff; --text:#1c1f23; --svag:#6b7280; --etikett:#3c434a;
+  --ln:#dadee2; --ln2:#edeff1; --falt:#f7f9fa;
+  --gron:#2d6a4f; --gron-mjuk:#f0f6f2; --gron-kant:#cbe0d4;
+  --dc:#1b6b4a;
+  --rod:#b42318; --rod-mjuk:#fdecea;
+  --rub:"Montserrat","Segoe UI",system-ui,sans-serif;
+  --txt:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181c;--yta:#1c2126;--text:#e9ecef;--svag:#9aa3ac;--etikett:#c9d0d6;--ln:#2c3238;--ln2:#262c32;--falt:#20262c;--gron-mjuk:#1d2b24;--gron-kant:#2f4a3c;--rod-mjuk:#3a1e1c;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15181c;--yta:#1c2126;--text:#e9ecef;--svag:#9aa3ac;--etikett:#c9d0d6;--ln:#2c3238;--ln2:#262c32;--falt:#20262c;--gron-mjuk:#1d2b24;--gron-kant:#2f4a3c;--rod-mjuk:#3a1e1c;color-scheme:dark}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 var(--txt)}
+.wrap{max-width:820px;margin:0 auto;padding:0 16px 120px}
+header{padding:18px 0 10px;border-bottom:2.5px solid var(--dc);margin-bottom:14px;display:flex;justify-content:space-between;gap:14px;align-items:flex-end;flex-wrap:wrap}
+header h1{font-family:var(--rub);font-size:22px;margin:0;font-weight:600;letter-spacing:-.02em}
+header .s{font-size:12.5px;color:var(--svag);margin-top:3px}
+.loggor{display:flex;gap:16px;text-align:right}
+.logga{font-family:var(--rub);font-size:11px;font-weight:700;letter-spacing:.1em;white-space:nowrap}
+.logga small{display:block;font-family:var(--txt);font-size:9.5px;font-weight:400;letter-spacing:0;color:var(--svag)}
+.logga.ar{color:var(--gron)}
+.intro{background:var(--yta);border:1px solid var(--ln);border-radius:10px;padding:12px 14px;font-size:13.5px;margin-bottom:14px}
+.intro b{display:block;font-family:var(--rub);font-size:13px;margin-bottom:3px}
+.intro p{margin:0 0 6px}.intro p:last-child{margin:0}
+.arvakolage{background:var(--gron-mjuk);border:1px solid var(--gron-kant);border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:14px;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.arvakolage button{font:inherit;font-size:13px;padding:8px 12px;border-radius:8px;border:1px solid var(--gron);background:var(--gron);color:#fff;cursor:pointer}
+
+section{background:var(--yta);border:1px solid var(--ln);border-radius:10px;padding:14px;margin-bottom:12px}
+section h2{font-family:var(--rub);font-size:15px;color:var(--dc);margin:0 0 4px;font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+section h2 .vem{font-family:var(--txt);font-weight:400;font-size:12px;color:var(--svag)}
+section h2 .fyll{margin-left:auto;font-family:var(--rub);font-size:9px;letter-spacing:.09em;text-transform:uppercase;padding:2px 7px;border-radius:3px;border:1px solid var(--gron-kant);color:var(--gron);background:var(--gron-mjuk)}
+section h2 .fyll.ue{border-color:var(--dc);color:var(--dc);background:var(--yta)}
+section .hjalp{font-size:12.5px;color:var(--svag);margin:0 0 10px}
+.kundtext{font-size:12.5px;color:var(--etikett);margin:8px 0 0;border-top:1px solid var(--ln2);padding-top:8px}
+
+.rader{display:grid;grid-template-columns:1fr 1fr;gap:8px 18px}
+@media (max-width:620px){.rader{grid-template-columns:1fr}}
+.f{display:flex;flex-direction:column;gap:3px;min-width:0}
+.f label{font-size:11.5px;color:var(--etikett);font-weight:600}
+.f input,.f textarea{font:inherit;font-size:15px;padding:8px 10px;border:1px solid var(--ln);border-radius:7px;background:var(--falt);color:var(--text);width:100%;min-height:40px}
+.f input:focus,.f textarea:focus{outline:2px solid var(--dc);outline-offset:0;border-color:var(--dc)}
+.f.bred{grid-column:1/-1}
+.f .enh{position:relative}
+.f .enh input{padding-right:46px}
+.f .enh span{position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--svag)}
+.f small{font-size:11px;color:var(--svag)}
+
+/* checklista: två rader per punkt — texten, sedan status + kommentar */
+.rad{display:grid;grid-template-columns:34px 1fr;gap:3px 8px;padding:8px 0;border-top:1px solid var(--ln2);align-items:start}
+.rad:first-of-type{border-top:0}
+.rad .nr{font-size:12px;color:var(--svag);padding-top:3px;font-variant-numeric:tabular-nums}
+.rad .txt{font-size:14px;line-height:1.4}
+.rad .txt .ans{font-size:11px;color:var(--svag);font-weight:600;margin-left:6px}
+.rad.arvako{opacity:.75}
+.rad .linje{grid-column:2;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.rad .val{display:flex;gap:4px;flex:none}
+.val button{font:inherit;font-size:12.5px;padding:6px 10px;border-radius:20px;border:1px solid var(--ln);background:var(--yta);color:var(--text);cursor:pointer;min-height:34px;white-space:nowrap}
+.val button[aria-pressed="true"]{background:var(--dc);color:#fff;border-color:var(--dc)}
+.val button[data-v="avv"][aria-pressed="true"]{background:var(--rod);border-color:var(--rod)}
+.val button[data-v="ea"][aria-pressed="true"]{background:var(--svag);border-color:var(--svag)}
+.rad .kom{flex:1;min-width:140px}
+.rad .kom input{font:inherit;font-size:13.5px;padding:6px 10px;border:1px solid var(--ln);border-radius:7px;background:var(--falt);color:var(--text);width:100%;min-height:34px}
+.rad .kom input:placeholder-shown{border-style:dashed}
+.rad .tid{grid-column:2;font-size:10.5px;color:var(--svag)}
+
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{text-align:left;padding:6px 6px;vertical-align:middle}
+th{font-family:var(--rub);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--svag);font-weight:600;border-bottom:1.5px solid var(--ln)}
+tbody tr{border-bottom:1px solid var(--ln2)}
+td input{font:inherit;font-size:15px;padding:7px 8px;border:1px solid var(--ln);border-radius:6px;background:var(--falt);color:var(--text);width:100%;min-width:56px}
+td .pol{font-size:12px;white-space:nowrap}
+td .pol.omv{color:var(--rod);font-weight:600}
+td .ta{font:inherit;font-size:12px;border:0;background:none;color:var(--svag);cursor:pointer;text-decoration:underline;padding:4px}
+.tabell-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -14px;padding:0 14px}
+.varn{font-size:12px;color:var(--rod);margin-top:4px}
+.obs{border-left:4px solid var(--gron);background:var(--gron-mjuk);border-radius:0 6px 6px 0;padding:7px 12px;font-size:12.5px;line-height:1.45;margin-top:10px}
+.obs b{display:block;margin-bottom:1px}
+
+.layoutbild{border:1.5px dashed var(--ln);border-radius:8px;background:var(--falt);min-height:120px;display:flex;align-items:center;justify-content:center;text-align:center;padding:14px;font-size:13px;color:var(--svag);position:relative;overflow:hidden}
+.layoutbild img{max-width:100%;max-height:360px;display:block;border-radius:6px}
+.layoutbild.har{border-style:solid;padding:0;background:#fff}
+.layoutbild input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.layoutbild .byt{position:absolute;right:8px;bottom:8px;font-size:11px;background:rgba(28,31,35,.75);color:#fff;border-radius:4px;padding:3px 7px;pointer-events:none}
+
+/* bilder: alla i ett svep */
+.ladda{display:block;border:1.5px dashed var(--dc);border-radius:10px;background:var(--gron-mjuk);padding:16px;text-align:center;color:var(--dc);font-weight:600;position:relative;cursor:pointer;margin-bottom:10px}
+.ladda input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
+.ladda small{display:block;font-weight:400;color:var(--svag);font-size:12px;margin-top:3px}
+.lista{font-size:12.5px;color:var(--etikett);columns:2;column-gap:18px;margin:0 0 10px;padding-left:18px}
+@media (max-width:620px){.lista{columns:1}}
+.lista li{margin-bottom:2px;break-inside:avoid}
+.foton{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.foto{position:relative;margin:0}
+.foto .ruta{aspect-ratio:4/3;border:1px solid var(--gron-kant);border-radius:8px;overflow:hidden;background:var(--falt)}
+.foto .ruta img{width:100%;height:100%;object-fit:cover;display:block}
+.foto .nr{position:absolute;left:0;top:0;font-family:var(--rub);font-size:9.5px;font-weight:700;letter-spacing:.07em;color:#fff;background:rgba(24,28,32,.75);padding:2px 7px;border-radius:7px 0 6px 0;z-index:1}
+.foto .bort{position:absolute;right:4px;top:4px;z-index:2;border:0;background:rgba(24,28,32,.7);color:#fff;border-radius:50%;width:24px;height:24px;font-size:14px;line-height:1;cursor:pointer}
+.foto input{font:inherit;font-size:12px;padding:5px 7px;border:1px solid var(--ln);border-radius:6px;background:var(--falt);color:var(--text);width:100%;margin-top:4px}
+.foto input:placeholder-shown{border-style:dashed}
+.foto figcaption{font-size:12px;margin-top:4px;color:var(--etikett)}
+
+.avv{border:1px solid var(--ln);border-radius:8px;padding:10px;margin-bottom:8px}
+
+.sign .box{border:1px solid var(--ln);border-radius:8px;padding:12px}
+.sign .box b{display:block;font-family:var(--rub);font-size:13px;margin-bottom:4px}
+.sign .box small{display:block;font-size:12px;color:var(--svag);line-height:1.4;margin-bottom:8px}
+.sign canvas{width:100%;max-width:420px;height:120px;border:1px dashed var(--ln);border-radius:6px;background:var(--falt);touch-action:none;display:block}
+.sign .rensa{font:inherit;font-size:12px;border:0;background:none;color:var(--svag);cursor:pointer;padding:4px 0;text-decoration:underline}
+.intyg{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;margin-top:8px}
+.intyg input{width:22px;height:22px;margin:0;flex:none}
+
+.dock{position:fixed;left:0;right:0;bottom:0;background:var(--yta);border-top:1px solid var(--ln);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0));display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;z-index:5;box-shadow:0 -4px 20px rgba(0,0,0,.06)}
+.dock .status{font-size:12.5px;color:var(--svag);min-width:0}
+.dock .knappar{display:flex;gap:8px}
+.dock button{font:inherit;font-size:14px;padding:10px 16px;border-radius:8px;border:1px solid var(--dc);background:var(--dc);color:#fff;cursor:pointer;min-height:42px}
+.dock button.sek{background:transparent;color:var(--dc)}
+.saknas{font-size:12.5px;color:var(--rod)}
+
+/* färdigt dokument */
+body.klar .dock,body.klar .intro,body.klar .arvakolage,body.klar .bort,body.klar .byt,body.klar .fyll,body.klar .hjalp,body.klar .varn,body.klar .rensa,body.klar .ladda,body.klar .lista,body.klar .f small,body.klar .ta,body.klar #lagg-avv,body.klar #lagg-strang{display:none!important}
+body.klar .rad.arvako{opacity:1}
+body.klar .rad .kom:empty{display:none}
+.utkast{display:none;background:var(--rod-mjuk);border-left:4px solid var(--rod);padding:8px 12px;border-radius:0 6px 6px 0;margin-bottom:12px;font-size:13px}
+body.klar .utkast{display:block}
+.avvsamling{display:none}
+body.klar .avvsamling{display:block}
+@page{size:A4;margin:14mm}
+@media print{
+  body{background:#fff;color:#000;font-size:12px}
+  .wrap{max-width:none;padding:0}
+  .dock,.intro,.arvakolage,.bort,.byt,.hjalp,.fyll,.varn,.rensa,.ladda,.lista,.f small,.ta,#lagg-avv,#lagg-strang{display:none!important}
+  section{border:0;padding:0 0 10px;break-inside:auto;box-shadow:none}
+  section h2{break-after:avoid}
+  .rad,.foto,.avv,.sign .box{break-inside:avoid}
+  .val button{border-radius:3px;padding:2px 7px;font-size:11px}
+  .val button:not([aria-pressed="true"]){display:none}
+  .foton{grid-template-columns:repeat(3,1fr)}
+  .rad .kom input:placeholder-shown{display:none}
+  input,textarea{border:0;border-bottom:1px solid #999;border-radius:0;background:none;padding:2px 0;min-height:0}
+}
+
+.val.scen,.val.tillval{flex-wrap:wrap}
+.val.scen button{white-space:normal;text-align:left}
+.scentext{font-size:12.5px;color:var(--etikett);margin:8px 0 0;background:var(--falt);border-radius:6px;padding:7px 10px}
+.varde{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--svag);flex:none}
+.varde input{font:inherit;font-size:14px;width:64px;padding:5px 7px;border:1px solid var(--ln);border-radius:6px;background:var(--falt);color:var(--text);min-height:34px}
+.ar-status{font-size:12.5px;color:var(--svag);font-style:italic}
+.ar-status.satt{font-style:normal;color:#fff;background:var(--dc);border-radius:3px;padding:2px 8px;font-size:12px}
+.ar-status.satt.avv{background:var(--rod)}.ar-status.satt.ea{background:var(--svag)}
+.ar-kom{font-size:13px;color:var(--etikett)}
+.ar-plats{font-size:13px;color:var(--svag);font-style:italic;border-bottom:1px solid #c3c7cc;min-height:20px;padding:4px 0;display:block}
+.vantar{background:#fff7e6;border-left:4px solid #b45309;padding:8px 12px;border-radius:0 6px 6px 0;margin-bottom:12px;font-size:13px}
+.efter{background:var(--gron-mjuk);border:1px solid var(--gron-kant);border-radius:10px;padding:12px 14px;font-size:13.5px;margin-bottom:12px}
+.efter button{font:inherit;font-size:13px;padding:8px 12px;border-radius:8px;border:1px solid var(--dc);background:transparent;color:var(--dc);cursor:pointer;margin-top:6px}
+.slutfor{border:2px solid var(--gron);background:var(--yta);border-radius:12px;padding:14px;margin:24px 0 12px}
+.slutfor h2{color:var(--gron)}
+.arvako-lank{display:block;text-align:center;font-size:12px;color:var(--svag);margin:18px 0 0}
+body.klar .vantar{display:block}
+body.klar .nytt-projekt{display:none!important}
+body.klar .enh{display:flex;gap:4px;align-items:baseline}
+body.klar .f .enh span{position:static!important;transform:none!important}
+.ar-plats.satt{font-style:normal;color:var(--text)}
+.ar-esign{font-size:13px;line-height:1.5;border-left:3px solid var(--gron);padding:4px 10px;color:var(--text)}
+input.last{background:transparent;border-color:transparent;padding-left:0;color:var(--text)}
+[data-scen] button:disabled,.tillval button:disabled{cursor:default;opacity:1}
+[data-scen] button:disabled:not([aria-pressed=true]),.tillval button:disabled:not([aria-pressed=true]){display:none}
+.forifyllt-info{background:var(--gron-mjuk);border-radius:6px;padding:8px 10px;margin:0 0 8px}
+.efter-bg{position:fixed;inset:0;background:rgba(20,24,28,.45);z-index:900;display:flex;align-items:center;justify-content:center;padding:16px}
+.efter-bg .efter{max-width:440px;width:100%;margin:0;box-shadow:0 8px 30px rgba(0,0,0,.25)}
+[hidden]{display:none!important}
+.efter .knapprad{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.efter .knapprad button{font:inherit;font-size:15px;padding:11px 16px;border-radius:8px;cursor:pointer;border:1px solid var(--gron)}
+#dela-fil{background:var(--gron);color:#fff}#ladda-fil{background:#fff;color:var(--gron)}
+.forbered{border:2px solid var(--gron);background:var(--yta);border-radius:12px;padding:14px;margin:0 0 16px}
+.forbered h2{color:var(--gron)}
+#fb-ut{width:100%;font-size:12px;font-family:ui-monospace,monospace;min-height:70px;border:1px solid var(--ln);border-radius:6px;padding:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <h1>Egenkontroll solcellsmontage</h1>
+    <div class="s">Montage, DC-kablage och inkoppling i växelriktaren · med mätvärden per sträng och bilder</div>
+  </div>
+  <div class="loggor">
+    <div class="logga" id="ue-logga">UE DC<small>utförande entreprenör</small></div>
+    <div class="logga ar">ARVAKO ENERGI<small>er leverantör</small></div>
+  </div>
+</header>
+
+<div class="utkast" id="utkast"></div>
+<div class="vantar" id="vantar" style="display:none"><b>Väntar på Arvakos signering.</b> Arvakos del (projekteringen, stränglayouten och Arvakos signatur) fylls i när dokumentet kommit in. Dokumentet går till kunden först därefter.</div>
+
+<section class="forbered" id="forbered" hidden>
+  <h2>Arvako: skapa projektlänk</h2>
+  <p class="hjalp">Fyll i projektet och Arvakos rader nedan, sedan namn och datum här. Länken öppnar formuläret med allt det ifyllt och godkänt; montören fyller i resten och skickar ett komplett dokument. Lägg länken som knapp i UE-underlaget.</p>
+  <div class="rader"><div class="f"><label>Godkänns av</label><input id="fb-namn" value="Ola Böving"></div><div class="f"><label>Datum</label><input id="fb-datum" type="date"></div></div>
+  <div style="margin-top:10px"><button type="button" id="fb-skapa" style="font:inherit;font-size:14px;padding:10px 16px;border-radius:8px;border:1px solid var(--gron);background:var(--gron);color:#fff;cursor:pointer">Skapa länk</button></div>
+  <div id="fb-resultat" hidden style="margin-top:10px"><textarea id="fb-ut" readonly></textarea><button type="button" class="rensa" id="fb-kopiera">Kopiera länken</button></div>
+</section>
+
+<div class="intro" id="intro">
+  <b>Så fyller du i</b>
+  <p>Allt sparas i telefonen medan du jobbar, så du kan stänga och fortsätta senare på samma telefon. Ta bilderna under arbetet som vanligt och ladda upp dem i ett svep när du är klar. Bocka varje rad, skriv värdena där det står en enhet, signera och tryck <b style="display:inline">Skicka</b> — då skapas ett färdigt dokument som du skickar till Arvakos projektledare. Inställningar och serienummer behöver du inte skriva. Dokumentet går vidare till kunden, så inga lösenord eller etiketter med inloggningsuppgifter i bild.</p>
+</div>
+
+<div class="efter-bg" id="efter-skicka" hidden><div class="efter" aria-live="polite"><b style="font-family:var(--rub);font-size:17px;display:block;margin-bottom:4px">Dokumentet är klart</b> Tryck Skicka dokumentet och välj Mail, till Arvakos projektledare: <b style="display:inline;user-select:all">ola.boving@arvakoenergi.se</b>. Går det inte: tryck Spara som fil och bifoga filen i ett mejl.
+<div class="knapprad"><button type="button" id="dela-fil">Skicka dokumentet</button><button type="button" id="ladda-fil">Spara som fil</button></div>
+<div style="font-size:13px;color:var(--svag)">När dokumentet är skickat kan du börja på nästa projekt.</div>
+<div class="knapprad" style="margin-bottom:0"><button type="button" class="nytt-projekt" style="background:#fff;color:var(--text);border-color:var(--ln)">Börja på nytt projekt</button><button type="button" id="efter-stang" style="background:#fff;color:var(--text);border-color:var(--ln)">Stäng</button></div></div></div>
+
+<section id="s-projekt">
+  <h2>Projekt <span class="fyll ue">Montören fyller i</span></h2>
+  <div class="rader">
+    <div class="f"><label>Projekt (kundens efternamn och adress, som i UE-underlaget)</label><input data-k="projektnamn" data-proj-in placeholder="t.ex. Björkander, Armébacken 11"></div>
+    <div class="f"><label>Kund</label><input data-k="kund"></div>
+    <div class="f bred"><label>Adress</label><input data-k="adress"></div>
+    <div class="f"><label>Ert företag</label><input data-k="ue" placeholder="Företag"><small>Telefonen kommer ihåg det till nästa projekt.</small></div>
+    <div class="f"><label>Org.nr</label><input data-k="orgnr" placeholder="XXXXXX-XXXX"></div>
+  </div>
+</section>
+
+<section id="s-utforande">
+  <h2>Utförande <span class="fyll ue">Montören fyller i</span></h2>
+  <div class="rader">
+    <div class="f"><label>DC-arbetet avslutat</label><input data-k="slut" type="date"><small>Lämnas tomt sätts dagens datum när du skickar.</small></div>
+  </div>
+</section>
+
+<section id="s-layout">
+  <h2>Stränglayout <span class="vem">enligt UE-underlaget · bekräfta eller beskriv ändringen</span></h2>
+  <p class="hjalp" id="layout-hjalp">Stränglayouten finns i UE-underlaget från Arvako. Arvako lägger in den i dokumentet när det kommit in.</p>
+  <div class="layoutbild" id="layoutbild" data-ar-f="layout"><span>Stränglayouten läggs in av Arvako</span></div>
+  <div class="rad" style="margin-top:10px;border-top:1px solid var(--ln2);padding-top:12px">
+    <div class="nr"></div>
+    <div class="txt">Layouten som byggd</div>
+    <div class="linje"><div class="val" data-rad="layout_status"><button type="button" data-v="ok">Byggd enligt UE-underlaget</button><button type="button" data-v="avv">Ändrad</button></div>
+    <div class="kom"><input data-k="layout_andring" placeholder="Om ändrad: vad — och ta en bild på den nya layouten"></div></div>
+  </div>
+</section>
+<div id="checklistor"></div>
+
+<section id="s-strang">
+  <h2>Mätvärden per sträng <span class="vem">med växelriktaren frånkopplad</span><span class="fyll ue">Montören fyller i</span></h2>
+  <p class="hjalp">Tomgångsspänning och isolationsresistans per sträng, samma numrering som stränglayouten. Visar instrumentet minus på Voc, skriv minus — då registreras omvänd polaritet.</p>
+  <div class="tabell-scroll"><table><thead><tr><th>Sträng</th><th>Voc (V)</th><th>Polaritet</th><th>Riso (MΩ)</th><th></th></tr></thead><tbody id="matttab"></tbody></table></div>
+  <button type="button" id="lagg-strang" style="font:inherit;font-size:12.5px;border:0;background:none;color:var(--dc);text-decoration:underline;cursor:pointer;padding:6px 0">+ Lägg till sträng</button>
+  <div id="mattvarn" class="varn"></div>
+  <div class="rader" style="margin-top:6px">
+    <div class="f"><label>Testspänning isolation</label><div class="enh"><input data-k="testsp" inputmode="numeric" placeholder="500"><span>V</span></div><small>500 V när strängspänningen är under 500 V, annars 1000 V (SS-EN 62446-1).</small></div>
+    <div class="f"><label>Instrument</label><input data-k="instrument" placeholder="fabrikat och modell"><small>Telefonen kommer ihåg det till nästa projekt.</small></div>
+  </div>
+  <p class="kundtext">Isolationen mäts med plus och minus kortslutna mot jord. Värdena är referensvärden: tappar en sträng produktion senare jämför en elektriker mot dem. Strängströmmen läser Arvako ur portalen vid driftsättningen.</p>
+</section>
+<section id="s-avv">
+  <h2>Övrigt att rapportera <span class="vem">sådant på huset som inte ingår i jobbet</span></h2>
+  <p class="hjalp">Avvikelser i det egna arbetet markerar du på raden — och ring eller mejla Arvakos projektledare samma dag. Här skriver du det ni ser som inte ingår i jobbet men som kunden borde veta: skadade pannor utanför panelytan, en trasig takstege, en otät genomföring sedan tidigare. Arvako erbjuder kunden åtgärd. Finns bild: skriv bildnumret.</p>
+  <div id="avvlista"></div>
+  <button type="button" id="lagg-avv" style="font:inherit;font-size:12.5px;border:0;background:none;color:var(--dc);text-decoration:underline;cursor:pointer;padding:6px 0">+ Lägg till</button>
+  <div class="avvsamling" id="avvsamling"></div>
+</section>
+
+<section id="s-bilder">
+  <h2>Bilder <span class="vem">alla på en gång</span><span class="fyll ue">Montören fyller i</span></h2>
+  <label class="ladda">Lägg till bilder<small>välj alla från kamerarullen på en gång · de krymps automatiskt</small><input type="file" accept="image/*" multiple id="bildfiler"></label>
+  <p class="hjalp" style="margin-bottom:4px">Det här vill vi se i bilderna — ordningen spelar ingen roll, skriv gärna vad bilden visar men det går bra utan:</p>
+  <ul class="lista" id="bildlista"></ul>
+  <div class="foton" id="foton"></div>
+  <datalist id="bildnamn"><option value="Infästning"><option value="Genomföring"><option value="DC-kabelväg"><option value="Taket färdigt"><option value="Växelriktaren inkopplad"><option value="Batteriet monterat"><option value="DC-märkning"><option value="Funktionsjord"><option value="DC-frånskiljare"><option value="Arbetsplatsen återställd"><option value="Avvikelse"><option value="Observation"></datalist>
+</section>
+
+<section id="s-sign" class="sign">
+  <h2>Signering</h2>
+  <div class="box">
+    <b>Kontrollen utförd, DC-installationen klar för AC-inkoppling</b>
+    <small><span id="sign-ue">Utförande företag</span>, org.nr <span id="sign-orgnr">—</span>, registrerat elinstallationsföretag. Montageledaren intygar att kontrollen är utförd enligt raderna ovan, utom raderna under Projektering som Arvako intygar. Raderna är tidsstämplade när de registrerades i formuläret.</small>
+    <canvas id="sig" width="600" height="220"></canvas>
+    <button type="button" class="rensa" id="sig-rensa">Rensa signaturen</button>
+    <div class="rader" style="margin-top:6px"><div class="f"><label>Montageledare, namnförtydligande</label><input data-k="ml" autocomplete="name"></div><div class="f"><label>Datum</label><input data-k="sign_datum" type="date"></div></div>
+    <label class="intyg"><input type="checkbox" data-k="intyg"> <span>Jag intygar att kontrollen är utförd enligt ovan och att uppgifterna är riktiga.</span></label>
+  </div>
+  <div class="box" id="ar-signbox" style="margin-top:12px">
+    <b>Projekteringen — Arvako Energi AB</b>
+    <small>Arvako Energi AB, org.nr 559528-2897, leverantör och projektör. Intygar raderna under Projektering och att lastberäkningen gäller den projekterade layouten. <span id="ar-signtid">Signeras av Arvako när dokumentet kommit in.</span></small>
+    <div class="rader"><div class="f"><label>Projektör</label><span class="ar-plats" data-ar-f="namn">Fylls i av Arvako</span></div><div class="f"><label>Datum</label><span class="ar-plats" data-ar-f="datum">—</span></div></div>
+    <div data-ar-f="sig" style="margin-top:8px"></div>
+  </div>
+  <p class="hjalp" style="margin-top:10px">Dokumentet mejlas till Arvako senast dagen efter avslutat DC-arbete och ingår i kundens slutdokumentation.</p>
+</section>
+
+<a href="#" class="arvako-lank" id="arvako-lank" hidden>Arvako: slutför en inkommen egenkontroll</a>
+
+<section class="slutfor" id="slutfor" hidden>
+  <h2>Arvako: slutför inkommen egenkontroll</h2>
+  <p class="hjalp">Ladda in filen som kom från montören, fyll i projekteringen, lägg in stränglayouten och signera. Ut kommer det slutliga dokumentet som läggs i projektet och går till kunden.</p>
+  <div class="f"><label>Inkommen fil</label><input type="file" accept=".html,text/html" id="sf-fil-in"><small id="sf-fil"></small></div>
+  <div id="sf-steg2" hidden>
+    <div id="sf-rader" style="margin-top:10px"></div>
+    <div class="f" style="margin-top:10px"><label>Stränglayout (bild ur platsbesöket)</label><input type="file" accept="image/*" id="sf-layout"><div id="sf-layout-visa" style="margin-top:6px"></div></div>
+    <div class="rader" style="margin-top:10px"><div class="f"><label>Projektör</label><input id="sf-namn" value="Ola Böving"></div><div class="f"><label>Datum</label><input id="sf-datum" type="date"></div></div>
+    <canvas id="sf-sig" width="600" height="160" style="height:90px;margin-top:8px;width:100%;max-width:420px;border:1px dashed var(--ln);border-radius:6px;background:var(--falt);touch-action:none;display:block"></canvas>
+    <button type="button" class="rensa" id="sf-sig-rensa">Rensa signaturen</button>
+    <div style="margin-top:12px"><button type="button" id="sf-spara" style="font:inherit;font-size:14px;padding:10px 16px;border-radius:8px;border:1px solid var(--gron);background:var(--gron);color:#fff;cursor:pointer">Spara slutligt dokument</button></div>
+  </div>
+</section>
+
+</div>
+
+<div class="dock">
+  <div class="status" id="status"></div>
+  <div class="knappar">
+    <button type="button" class="sek" id="skrivut">Skriv ut</button>
+    <button type="button" id="skicka">Skicka</button>
+  </div>
+</div>
+
+<script>
+const CFG={"typ": "dc", "titel": "Egenkontroll solcellsmontage", "filprefix": "Egenkontroll-DC", "ueStandard": "UE DC", "fyllUe": "Montören fyller i", "scen": false, "layout": true, "strang": "alltid", "varnRad": "D7", "minBilder": 5};
+const CHECK = [
+  {id:'proj', ar:true, titel:'Projektering', vem:'fylls i och signeras av Arvako när dokumentet kommit in', rader:[
+    ['P2','Tillgänglig takyta säkerställd',{ar:1}],
+    ['P3','Takmaterial, skick och typ av infästning undersökt — avvikelse rapporteras skriftligen till PL och kund',{ar:1}],
+    ['P4','Utformningen bedömd efter hinder på tak, layout och antal paneler',{ar:1}],
+    ['P5','Effekten av skuggning minimerad utifrån förutsättningarna',{ar:1}],
+    ['P6','Infästningarna dimensionerade för vind- och snölast (beräkningen finns i kundens mapp)',{ar:1}],
+  ]},
+  {id:'mont', titel:'Montage', vem:'ansvar ML', rader:[
+    ['P1','Riskbedömning av taksäkerhet och fallskydd gjord'],
+    ['M1','Montagesystemet monterat enligt tillverkarens anvisningar'],
+    ['M2','Skenorna kapade vid panelerna, ändklämmor monterade'],
+    ['M3','Montagesystemet förberett för funktionsjordning'],
+    ['M4','Alla komponenter nya från fabrik'],
+    ['M5','Infästning i papp/råspont tätad med bitumen eller likvärdig godkänd tätning'],
+    ['M6','Alla komponenter monterade enligt leverantörens anvisningar'],
+    ['M7','Material som används utomhus är UV-beständigt'],
+    ['M8','Tegelpannor slipade där det behövs för att minimera glipor'],
+    ['M9','Elkomponenter utomhus eller i fuktigt utrymme IP-klassade för utomhusbruk'],
+  ]},
+  {id:'dc', titel:'DC-dragning och inkoppling', vem:'ansvar ML', rader:[
+    ['D1','Dubbelisolerad solcellskabel med rätt dimension på DC-sidan'],
+    ['D2','DC-kablage på tak enligt SEK Handbok 457 — plus och minus intill varandra, i separata rör'],
+    ['D3','Alla genomföringar i rör och tätade; plus och minus i separata rör'],
+    ['D4','DC-kablage varaktigt fäst, skyddat mot slitage, kabelbrott och gnagare'],
+    ['D5','Växelriktaren monterad på lämplig plats enligt leverantörens anvisningar'],
+    ['D6','Batteriet monterat enligt leverantörens anvisningar, kraftkabel batteri–växelriktare dragen'],
+    ['D7','DC inkopplat i växelriktaren; strängarna märkta vid inkopplingen (S1+, S1− …); mätvärdena utan avvikelse'],
+    ['D8','Kabeldragningen möjliggör utökning av batteriet utan att nya kablar behöver dras'],
+    ['D9','Överspänningsskydd DC',{alt:['inb','Inbyggt i växelriktaren','ext','Externt']}],
+    ['D10','DC-frånskiljare',{alt:['inb','Inbyggd i växelriktaren','ext','Extern']}],
+    ['D11','Arbetsplatsen avstädad och återställd'],
+  ]},
+];
+const BILDLISTA = [
+  ['Infästning i närbild, innan panelerna',''],['Genomföring i taket, tätad',''],['DC-kabelvägen, fäst och skyddad',''],
+  ['Taket färdigt, varje taksida',''],['Växelriktaren inkopplad, strängmärkningen synlig',''],['Batteriet monterat',''],
+  ['DC-kabelns varningsmärkning där den är åtkomlig',''],['Funktionsjordens anslutning vid montagesystemet',''],
+  ['Extern DC-frånskiljare, om sådan finns',''],['Arbetsplatsen återställd',''],
+];
+const SCENTEXT={};
+
+/* ===== Gemensam motor för Arvakos egenkontrollformulär, webbversion =====
+   Projektlänk: #p=<base64url(JSON {typ,projektnamn,kund,adress,ue,orgnr,scen,tillval,ar:{rad:{s,k}},arnamn,ardatum})>
+   förifyller projektet och Arvakos rader och godkännande; dokumentet blir komplett när UE skickar.
+   #arvako öppnar Arvakos läge: fyll i projektet och Arvakos rader och skapa projektlänken.
+   Utan länkdata fungerar formuläret som förut: Arvako slutför den inkomna filen.
+   En länk för alla projekt. Montören fyller i allt sitt i telefonen och trycker Skicka:
+   ett fristående dokument sparas och mejlas till Arvako, märkt "väntar på Arvakos signering".
+   Arvako öppnar samma länk på datorn, väljer "Arvako: slutför", laddar in filen, fyller i
+   projekteringen och signerar; ut kommer det slutliga dokumentet.
+   Utkastet sparas lokalt i telefonen (localStorage, bilderna i IndexedDB) så inget försvinner.
+   Filer sparas via plattformens downloads-förmåga när sidan körs som artefakt, annars som
+   vanlig nedladdning. */
+
+const $=s=>document.querySelector(s);
+const esc=x=>String(x??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmtTid=t=>t?new Date(t).toLocaleString('sv-SE',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
+const idag=()=>new Date().toISOString().slice(0,10);
+const KAM='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>';
+
+/* ---------- lagring, tål att webbläsaren säger nej ---------- */
+/* ---------- projektlänk: #p=<base64url(JSON)> förifyller projekt och Arvakos del; #arvako = Arvakos läge ---------- */
+const ARVAKO=location.hash==='#arvako';
+let P=null;
+try{const m=location.hash.match(/^#p=([A-Za-z0-9_-]+)/);if(m){let b=m[1].replace(/-/g,'+').replace(/_/g,'/');while(b.length%4)b+='=';const by=Uint8Array.from(atob(b),c=>c.charCodeAt(0));P=JSON.parse(new TextDecoder().decode(by));if(P.typ&&P.typ!==CFG.typ)P=null}}catch(e){P=null}
+function hsh(x){let h=5381;for(const c of x)h=((h*33)^c.charCodeAt(0))>>>0;return h.toString(36)}
+const PFALT=['projektnamn','kund','adress','ue','orgnr'];
+const STATUSTXT={ok:'OK',ea:'Inte aktuell',avv:'Avvikelse'};
+const NYCKEL='arvako-egenkontroll-'+CFG.typ+'-utkast-v2'+(P?'-p'+hsh(location.hash):'')+(ARVAKO?'-arvako':'');
+const MINNE='arvako-egenkontroll-minne';   // företag, org.nr, instrument — sparas mellan projekt
+const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v);return true}catch(e){return false}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+const TOM=()=>({scen:'',tillval:{},strangar:['S1','S2'],matt:{},rad:{},kom:{},tid:{},val:{},avv:[],bilder:[],sig:null,sign_datum:idag()});
+let S=TOM();
+try{Object.assign(S,JSON.parse(ls.get(NYCKEL)||'{}'))}catch(e){}
+try{const m=JSON.parse(ls.get(MINNE)||'{}');['ue','orgnr','instrument'].forEach(k=>{if(!S[k]&&m[k])S[k]=m[k]})}catch(e){}
+if(P){PFALT.forEach(k=>{if(P[k])S[k]=P[k]});if(CFG.scen){if(P.scen)S.scen=P.scen;S.tillval=P.tillval||{}}}
+if(!S.ar)S.ar={};
+let timer,lagringOk=true;
+function spara(){clearTimeout(timer);timer=setTimeout(()=>{lagringOk=ls.set(NYCKEL,JSON.stringify(S));const m={ue:S.ue||'',orgnr:S.orgnr||'',instrument:S.instrument||''};ls.set(MINNE,JSON.stringify(m));status(lagringOk?'Sparat i telefonen '+new Date().toLocaleTimeString('sv-SE',{hour:'2-digit',minute:'2-digit'}):'Telefonen sparar inte utkastet — fyll i och skicka utan att stänga sidan')},250)}
+function status(t){const el=$('#status');if(!el)return;const sak=saknas();el.innerHTML=(sak.length?'<span class="saknas">Saknas: '+esc(sak.join(', '))+'</span><br>':'')+esc(t)}
+
+/* bilder: IndexedDB, annars i minnet */
+const BILDMINNE={};
+const DB=new Promise(res=>{try{const r=indexedDB.open('arvako-egenkontroll-'+CFG.typ,1);r.onupgradeneeded=()=>r.result.createObjectStore('bild');r.onsuccess=()=>res(r.result);r.onerror=()=>res(null)}catch(e){res(null)}});
+async function bildSpara(k,v){BILDMINNE[k]=v;const db=await DB;if(!db)return;try{await new Promise((res,rej)=>{const t=db.transaction('bild','readwrite');t.objectStore('bild').put(v,k);t.oncomplete=res;t.onerror=()=>rej(t.error)})}catch(e){}}
+async function bildLas(k){if(BILDMINNE[k])return BILDMINNE[k];const db=await DB;if(!db)return null;try{return await new Promise(res=>{const r=db.transaction('bild').objectStore('bild').get(k);r.onsuccess=()=>res(r.result||null);r.onerror=()=>res(null)})}catch(e){return null}}
+async function bildBort(k){delete BILDMINNE[k];const db=await DB;if(!db)return;try{await new Promise(res=>{const t=db.transaction('bild','readwrite');t.objectStore('bild').delete(k);t.oncomplete=res;t.onerror=res})}catch(e){}}
+function krymp(fil,max){return new Promise(res=>{const img=new Image();const url=URL.createObjectURL(fil);img.onload=()=>{let w=img.width,h=img.height;const s=Math.min(1,max/Math.max(w,h));w=Math.round(w*s);h=Math.round(h*s);const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);URL.revokeObjectURL(url);res(c.toDataURL('image/jpeg',0.78))};img.onerror=()=>{URL.revokeObjectURL(url);res(null)};img.src=url})}
+
+
+/* ---------- egna dialogrutor (webbläsarens confirm/alert stoppas i Claude-visningen) ---------- */
+function ruta(text,ja,nej){return new Promise(res=>{
+  const bg=document.createElement('div');bg.style.cssText='position:fixed;inset:0;background:rgba(20,24,28,.45);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px';
+  const b=document.createElement('div');b.setAttribute('role','dialog');b.style.cssText='background:#fff;color:#1c1f23;border-radius:10px;padding:18px;max-width:420px;width:100%;box-shadow:0 8px 30px rgba(0,0,0,.25);font-size:15px;line-height:1.45';
+  const p=document.createElement('p');p.style.cssText='margin:0 0 14px;white-space:pre-line';p.textContent=text;b.appendChild(p);
+  const rad=document.createElement('div');rad.style.cssText='display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap';
+  const knapp=(t,v,prim)=>{const k=document.createElement('button');k.type='button';k.textContent=t;k.style.cssText='font:inherit;padding:10px 16px;border-radius:8px;cursor:pointer;border:1px solid '+(prim?'#2d6a4f;background:#2d6a4f;color:#fff':'#c3c7cc;background:#fff;color:#1c1f23');k.onclick=()=>{bg.remove();res(v)};rad.appendChild(k);return k};
+  if(nej)knapp(nej,false,false);const f=knapp(ja||'OK',true,true);
+  b.appendChild(rad);bg.appendChild(b);document.body.appendChild(bg);f.focus();
+})}
+const fraga=(t,ja,nej)=>ruta(t,ja,nej||'Avbryt');
+const meddela=t=>ruta(t,'OK',null);
+
+/* ---------- spara fil: plattformens downloads, annars vanlig nedladdning ---------- */
+const CL=(window.claude&&window.claude.use)?window.claude:null;
+const DL=CL?CL.use('downloads').catch(()=>null):Promise.resolve(null);
+async function sparaFil(html,namn,msg){
+  const dl=await DL;
+  if(dl){try{await dl.save({filename:namn,data:new Blob([html],{type:'text/html'})});status(msg);return true}catch(e){if(e&&e.code==='declined'){status('Avbrutet — tryck igen när du vill spara');return false}if(e&&e.code==='rate_limited'){status('Vänta en stund och tryck igen');return false}}}
+  try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));a.download=namn;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},3000);status(msg);return true}catch(e){status('Kunde inte spara filen här');return false}
+}
+
+/* ---------- villkor och numrering ---------- */
+function syns(o){if(!o)return true;if(o.s&&!(S.scen&&o.s.split(',').includes(S.scen)))return false;if(o.t&&!S.tillval[o.t])return false;return true}
+const arRad=r=>!!(r[2]&&r[2].ar);
+function synligaRader(){return CHECK.filter(syns).flatMap(sek=>sek.rader.filter(r=>syns(r[2])))}
+function numrera(){const m={};let n=0;CHECK.filter(syns).forEach(sek=>{const rader=sek.rader.filter(r=>syns(r[2]));if(!rader.length)return;if(sek.ar){rader.forEach((r,i)=>m[r[0]]='P'+(i+1));return}n++;rader.forEach((r,i)=>m[r[0]]=n+'.'+(i+1))});return m}
+let NR={};const vn=k=>NR[k]||k;
+
+/* ---------- rendering ---------- */
+function bindFalt(root){
+  root.querySelectorAll('[data-k]').forEach(el=>{
+    const k=el.dataset.k;
+    if(el.type==='checkbox'){el.checked=!!S[k];el.onchange=()=>{S[k]=el.checked;spara()}}
+    else{if(S[k]!==undefined)el.value=S[k];el.oninput=()=>{S[k]=el.value;spara();if(['ue','orgnr'].includes(k))uppdUe()}}
+  });
+}
+function uppdUe(){const n=S.ue||CFG.ueStandard;$('#ue-logga').firstChild.textContent=n.toUpperCase();$('#sign-ue').textContent=S.ue||'Utförande företag';$('#sign-orgnr').textContent=S.orgnr||'—'}
+
+function renderScen(){
+  if(!CFG.scen)return;
+  document.querySelectorAll('[data-scen] button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S.scen));
+  document.querySelectorAll('.tillval button').forEach(b=>b.setAttribute('aria-pressed',!!S.tillval[b.dataset.t]));
+  $('#scentext').textContent=S.scen?SCENTEXT[S.scen]:'Välj vilket jobb det är — raderna anpassas efter det.';
+}
+function renderVillkor(){
+  const st=$('#s-strang');if(st)st.hidden=!(CFG.strang==='alltid'||(CFG.strang==='s3'&&S.scen==='3'));
+  $('#bildlista').innerHTML=BILDLISTA.filter(([t,c])=>!c||(/^\d$/.test(c)?S.scen===c:S.tillval[c])).map(([t])=>`<li>${esc(t)}</li>`).join('');
+}
+document.addEventListener('click',e=>{
+  const sb=e.target.closest('[data-scen] button');if(sb&&P&&P.scen)return;if(sb){S.scen=S.scen===sb.dataset.v?'':sb.dataset.v;renderScen();renderVillkor();renderCheck();spara();return}
+  const tb=e.target.closest('.tillval button');if(tb&&P&&P.scen)return;if(tb){S.tillval[tb.dataset.t]=!S.tillval[tb.dataset.t];renderScen();renderVillkor();renderCheck();spara();return}
+});
+
+function renderCheck(){
+  NR=numrera();
+  const host=$('#checklistor');host.innerHTML='';
+  for(const sek of CHECK){
+    if(!syns(sek))continue;
+    const rader=sek.rader.filter(r=>syns(r[2]));if(!rader.length)continue;
+    const s=document.createElement('section');s.className='sek'+(sek.ar?' sek-ar':'');if(sek.ar)s.id='sek-ar';
+    const vem=sek.ar&&(P&&P.arnamn)?'ifyllt och godkänt av Arvako innan arbetet':sek.ar&&ARVAKO?'fyll i innan länken skickas':sek.vem;
+    s.innerHTML=`<h2>${sek.titel} ${vem?`<span class="vem">${vem}</span>`:''}<span class="fyll${sek.ar?'':' ue'}">${sek.ar?'Arvako fyller i':CFG.fyllUe}</span></h2>`;
+    for(const [nr,txt,o={}] of rader){
+      const d=document.createElement('div');d.className='rad'+(o.ar?' arvako':'');
+      if(o.ar){
+        if(ARVAKO){
+          const a=S.ar[nr]||{};
+          d.innerHTML=`<div class="nr">${vn(nr)}</div><div class="txt">${txt}<span class="ans">Arvako</span></div>
+            <div class="linje"><div class="val" data-arval="${nr}">${Object.entries(STATUSTXT).map(([v,t])=>`<button type="button" data-v="${v}" aria-pressed="${a.s===v}">${t}</button>`).join('')}</div><div class="kom"><input data-arkom="${nr}" placeholder="Kommentar" value="${esc(a.k)}"></div></div>`;
+          d.querySelector('[data-arkom]').oninput=e=>{(S.ar[nr]=S.ar[nr]||{}).k=e.target.value;spara()};
+          s.appendChild(d);continue;
+        }
+        const a=P&&P.ar&&P.ar[nr];
+        d.innerHTML=`<div class="nr">${vn(nr)}</div><div class="txt">${txt}<span class="ans">Arvako</span></div>
+          <div class="linje">${a?`<span class="ar-status satt ${esc(a.s)}" data-ar-rad="${nr}">${STATUSTXT[a.s]||''}</span><span class="ar-kom" data-ar-kom="${nr}">${esc(a.k)}</span>`:`<span class="ar-status" data-ar-rad="${nr}">Fylls i av Arvako</span><span class="ar-kom" data-ar-kom="${nr}"></span>`}</div>`;
+        s.appendChild(d);continue;
+      }
+      const knappar=o.alt
+        ?`<button type="button" data-v="${o.alt[0]}">${o.alt[1]}</button><button type="button" data-v="${o.alt[2]}">${o.alt[3]}</button>`
+        :`<button type="button" data-v="ok">OK</button><button type="button" data-v="ea">Inte aktuell</button><button type="button" data-v="avv">Avvikelse</button>`;
+      const varden=(o.v||[]).map(([k,enh,etik])=>`<label class="varde">${etik?`<span>${etik}</span>`:''}<input inputmode="${/^(jfb|lbjfb|prodtid)$/.test(k)?'text':'decimal'}" data-val="${nr}:${k}" value="${esc((S.val[nr]||{})[k])}">${enh?`<span>${enh}</span>`:''}</label>`).join('');
+      d.innerHTML=`<div class="nr">${vn(nr)}</div><div class="txt">${txt}${o.ans?`<span class="ans">${o.ans}</span>`:''}</div>
+        <div class="linje"><div class="val" data-rad="${nr}">${knappar}</div>${varden}<div class="kom"><input data-kom="${nr}" placeholder="${o.alt?'Var / kommentar':'Kommentar'}"></div></div>
+        <div class="tid" data-tid="${nr}">${fmtTid(S.tid[nr])}</div>`;
+      s.appendChild(d);
+      const inp=d.querySelector('[data-kom]');inp.value=S.kom[nr]||'';inp.oninput=()=>{S.kom[nr]=inp.value;spara()};
+      d.querySelectorAll('[data-val]').forEach(vi=>vi.oninput=()=>{const [n,k]=vi.dataset.val.split(':');(S.val[n]=S.val[n]||{})[k]=vi.value;spara()});
+    }
+    host.appendChild(s);
+  }
+  document.querySelectorAll('[data-vn]').forEach(e=>e.textContent=vn(e.dataset.vn));
+  uppdVal();
+}
+function uppdVal(){document.querySelectorAll('.val[data-rad]').forEach(g=>{const v=S.rad[g.dataset.rad]||'';g.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===v))})}
+document.addEventListener('click',e=>{
+  const ab=e.target.closest('.val[data-arval] button');if(ab){const nr=ab.parentElement.dataset.arval;const a=S.ar[nr]=S.ar[nr]||{};a.s=a.s===ab.dataset.v?'':ab.dataset.v;ab.parentElement.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.v===a.s));spara();return}
+});
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.val[data-rad] button');if(!b||b.closest('#slutfor'))return;
+  const g=b.closest('.val'),nr=g.dataset.rad;
+  S.rad[nr]=S.rad[nr]===b.dataset.v?'':b.dataset.v;
+  S.tid[nr]=S.rad[nr]?new Date().toISOString():undefined;
+  const t=document.querySelector(`[data-tid="${nr}"]`);if(t)t.textContent=fmtTid(S.tid[nr]);
+  if(S.rad[nr]==='avv'||S.rad[nr]==='ext'){const k=g.parentElement.querySelector('.kom input');if(k)k.focus()}
+  else if(S.rad[nr]==='ok'){const v=g.parentElement.querySelector('[data-val]');if(v&&!v.value)v.focus()}
+  uppdVal();spara();
+});
+
+/* strängmätning */
+function voc(m){return parseFloat(String(m.voc||'').replace(',','.').replace('−','-'))}
+function renderMatt(){
+  const tb=$('#matttab');if(!tb)return;tb.innerHTML='';
+  S.strangar.forEach((n,i)=>{
+    const m=S.matt[n]||(S.matt[n]={});const v=voc(m);const pol=isNaN(v)?'':(v<0?'omv':'ok');
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><b>${n}</b></td><td><input inputmode="decimal" value="${esc(m.voc)}" data-m="voc"></td><td><span class="pol ${pol}">${pol==='omv'?'Omvänd':pol==='ok'?'Korrekt':'—'}</span></td><td><input inputmode="decimal" value="${esc(m.riso)}" data-m="riso"></td><td>${i===S.strangar.length-1&&S.strangar.length>1?'<button type="button" class="ta" data-tabort>ta bort</button>':''}</td>`;
+    tr.querySelectorAll('input').forEach(inp=>inp.oninput=()=>{m[inp.dataset.m]=inp.value;spara();if(inp.dataset.m==='voc'){const vv=voc(m);const sp=tr.querySelector('.pol');const p=isNaN(vv)?'':(vv<0?'omv':'ok');sp.className='pol '+p;sp.textContent=p==='omv'?'Omvänd':p==='ok'?'Korrekt':'—'}kollaMatt()});
+    const t2=tr.querySelector('[data-tabort]');if(t2)t2.onclick=()=>{const bort=S.strangar.pop();delete S.matt[bort];renderMatt();spara()};
+    tb.appendChild(tr);
+  });
+  kollaMatt();
+}
+function kollaMatt(){const w=[];S.strangar.forEach(n=>{const m=S.matt[n]||{};const r=parseFloat(String(m.riso||'').replace(',','.'));if(m.riso&&r<1)w.push(`${n}: isolation under 1 MΩ`);if(voc(m)<0)w.push(`${n}: omvänd polaritet`)});const el=$('#mattvarn');if(el)el.textContent=w.length?'Avvikelse: '+w.join(' · ')+' — markera rad '+vn(CFG.varnRad)+' som Avvikelse och kontakta projektledaren.':''}
+
+function renderAvv(){
+  const host=$('#avvlista');host.innerHTML='';
+  S.avv.forEach((a,i)=>{const d=document.createElement('div');d.className='avv';d.innerHTML=`<div class="f bred"><label>Observation ${i+1} — vad och var (bildnummer om det finns)</label><input data-a="vad" value="${esc(a.vad)}"></div>`;d.querySelector('input').oninput=e=>{a.vad=e.target.value;spara()};host.appendChild(d)});
+}
+
+async function renderFoton(){
+  const host=$('#foton');host.innerHTML='';
+  for(const b of S.bilder){const d=await bildLas(b.id);if(!d)continue;const fig=document.createElement('figure');fig.className='foto';fig.innerHTML=`<span class="nr">${b.id}</span><div class="ruta"><img src="${d}" alt="${b.id}"></div><button type="button" class="bort" data-bort="${b.id}">×</button><input value="${esc(b.text)}" placeholder="Vad visar bilden? (valfritt)" data-btext="${b.id}" list="bildnamn">`;host.appendChild(fig)}
+  host.querySelectorAll('[data-btext]').forEach(i=>i.oninput=()=>{const b=S.bilder.find(x=>x.id===i.dataset.btext);if(b){b.text=i.value;spara()}});
+  host.querySelectorAll('[data-bort]').forEach(bt=>bt.onclick=async()=>{await bildBort(bt.dataset.bort);S.bilder=S.bilder.filter(x=>x.id!==bt.dataset.bort);spara();renderFoton()});
+}
+
+function signatur(cv,onChange){
+  const cx=cv.getContext('2d');cx.lineWidth=2.4;cx.lineCap='round';cx.strokeStyle='#1c1f23';
+  let rit=false;const pos=e=>{const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)*cv.width/r.width,y:(e.clientY-r.top)*cv.height/r.height}};
+  cv.addEventListener('pointerdown',e=>{rit=true;try{cv.setPointerCapture(e.pointerId)}catch(_){}const p=pos(e);cx.beginPath();cx.moveTo(p.x,p.y)});
+  cv.addEventListener('pointermove',e=>{if(!rit)return;const p=pos(e);cx.lineTo(p.x,p.y);cx.stroke()});
+  ['pointerup','pointercancel'].forEach(ev=>cv.addEventListener(ev,()=>{if(rit){rit=false;onChange(cv.toDataURL())}}));
+  return {rita(src){if(!src)return;const im=new Image();im.onload=()=>cx.drawImage(im,0,0);im.src=src},rensa(){cx.clearRect(0,0,cv.width,cv.height);onChange(null)}};
+}
+
+/* vad saknas */
+function saknas(){
+  const s=[];if(!S.projektnamn)s.push('projekt');if(!S.adress)s.push('adress');if(!S.ue||!S.orgnr)s.push('företag och org.nr');if(CFG.scen&&!S.scen)s.push('vilket jobb');
+  const rader=synligaRader().filter(r=>!arRad(r));
+  const ej=rader.filter(r=>!S.rad[r[0]]);if(ej.length)s.push(ej.length+' rader');
+  const avvUtan=rader.filter(r=>S.rad[r[0]]==='avv'&&!(S.kom[r[0]]||'').trim()).map(r=>vn(r[0]));if(avvUtan.length)s.push('kommentar på '+avvUtan.join('/'));
+  const utanVarde=rader.filter(r=>S.rad[r[0]]==='ok'&&r[2]&&r[2].v&&r[2].v.some(([k])=>!((S.val[r[0]]||{})[k]||'').trim())).map(r=>vn(r[0]));if(utanVarde.length)s.push('värde på '+utanVarde.join('/'));
+  if(CFG.strang==='alltid'||(CFG.strang==='s3'&&S.scen==='3')){const m=S.strangar.filter(n=>{const q=S.matt[n]||{};return !(q.voc&&q.riso)});if(m.length)s.push('strängvärden '+m.join('/'))}
+  if(CFG.layout&&!S.rad.layout_status)s.push('layouten som byggd');
+  if(S.bilder.length<CFG.minBilder)s.push('bilder ('+S.bilder.length+' av minst '+CFG.minBilder+')');
+  if(!S.ml)s.push('namnförtydligande');if(!S.sig||!S.intyg)s.push('signering');
+  return s;
+}
+
+/* ---------- montören: Skicka ---------- */
+function filnamn(suffix){return CFG.filprefix+'_'+(S.projektnamn||'projekt').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\w-]+/g,'_').replace(/^_+|_+$/g,'')+suffix+'.html'}
+function cssPath(el){const p=[];while(el&&el.nodeType===1&&el.tagName!=='HTML'){let s=el.tagName.toLowerCase();if(el.id){s+='#'+el.id;p.unshift(s);break}let i=1,sib=el;while((sib=sib.previousElementSibling))if(sib.tagName===el.tagName)i++;s+=`:nth-of-type(${i})`;p.unshift(s);el=el.parentElement}return p.join('>')}
+async function skicka(){
+  const sak=saknas();
+  if(sak.length&&!(await fraga('Det saknas: '+sak.join(', ')+'.\n\nSkicka ändå? Dokumentet märks då som ofullständigt.','Skicka ändå')))return;
+  if(!S.slut){S.slut=idag();const e=document.querySelector('[data-k=slut]');if(e)e.value=S.slut}
+  status('Skapar dokumentet …');
+  const doc=document.documentElement.cloneNode(true);const w=doc.querySelector('.wrap');
+  doc.querySelectorAll('script,datalist,#slutfor,#forbered,.dock,#intro,#arvako-lank,#efter-skicka').forEach(x=>x.remove());
+  doc.querySelector('body').classList.add('klar');
+  for(const inp of doc.querySelectorAll('input,textarea')){
+    if(inp.type==='file'){inp.remove();continue}
+    const live=document.querySelector(cssPath(inp));
+    let v=inp.type==='checkbox'?((live&&live.checked)?'☑':'☐'):(live?live.value:inp.value);
+    const litet=inp.dataset.kom!==undefined||inp.dataset.btext!==undefined||inp.dataset.val!==undefined||inp.dataset.k==='layout_andring';
+    if(litet&&!v){if(inp.dataset.val!==undefined)inp.closest('.varde').remove();else inp.remove();continue}
+    const span=document.createElement('span');span.textContent=v||'—';
+    span.style.cssText=litet?'font-size:13px;color:#1c1f23;padding:2px 0;font-weight:'+(inp.dataset.val!==undefined?'600':'400'):'display:block;padding:4px 0;border-bottom:1px solid #c3c7cc;min-height:20px;font-size:13px';
+    if(inp.closest('td'))span.style.borderBottom='0';
+    if(inp.hasAttribute('data-proj-in'))span.setAttribute('data-proj','');
+    inp.replaceWith(span);
+  }
+  doc.querySelectorAll('[data-scen],.tillval,.val[data-rad]').forEach(g=>{g.querySelectorAll('button').forEach(b=>{if(b.getAttribute('aria-pressed')!=='true')b.remove();else b.style.cssText='border-radius:3px;padding:2px 8px;font-size:12px;cursor:default'});if(!g.children.length&&g.matches('.val[data-rad]')){const e=document.createElement('span');e.textContent='— ej ifyllt';e.style.cssText='font-size:12px;color:#b42318';g.appendChild(e)}});
+  doc.querySelectorAll('td .ta,[hidden],#lagg-avv,#lagg-strang').forEach(x=>x.remove());
+  for(const f of doc.querySelectorAll('#foton .foto')){const id=f.querySelector('.nr').textContent;const d=await bildLas(id);const img=f.querySelector('img');if(d&&img)img.src=d;else f.remove()}
+  const lista=[];
+  synligaRader().forEach(r=>{if(S.rad[r[0]]==='avv')lista.push({nr:vn(r[0]),txt:r[1],kom:S.kom[r[0]]||'',typ:'Inom Arvakos leverans'})});
+  S.avv.forEach((a,i)=>lista.push({nr:'O'+(i+1),txt:'',kom:a.vad||'',typ:'Utanför Arvakos leverans — observation'}));
+  doc.querySelector('#avvlista').remove();
+  doc.querySelector('#avvsamling').innerHTML='<h3 style="font-family:var(--rub);font-size:13px;margin:0 0 6px">Avvikelser och observationer</h3>'+(lista.length?lista.map(a=>`<div class="avv"><b>${a.nr}</b> ${a.txt?esc(a.txt)+' — ':''}${a.kom?esc(a.kom):'<i>utan beskrivning</i>'}<div style="font-size:12px;color:var(--svag)">${a.typ}</div></div>`).join(''):'<p style="font-size:13px;color:var(--svag)">Inga avvikelser.</p>');
+  const sc=doc.querySelector('#sig');if(sc){if(S.sig){const im=document.createElement('img');im.src=S.sig;im.style.cssText='width:100%;max-width:340px;height:auto;border-bottom:1px solid #777;display:block';sc.replaceWith(im)}else{const t=document.createElement('div');t.textContent='Ej signerad';t.style.color='#b42318';sc.replaceWith(t)}}
+  const ut=doc.querySelector('#utkast');if(sak.length){ut.textContent='OFULLSTÄNDIGT — saknas: '+sak.join(', ')+'. Får inte gå vidare till kunden förrän det är komplett.'}else ut.remove();
+  const stamp=document.createElement('div');stamp.style.cssText='font-size:12px;color:#6b7280;margin:-6px 0 12px';stamp.textContent='Skapat '+new Date().toLocaleString('sv-SE')+' · '+(S.projektnamn||'');
+  w.insertBefore(stamp,w.querySelector('#vantar'));
+  const meta=doc.querySelector('head');
+  const klar=!!(P&&P.arnamn);
+  if(klar){const v=doc.querySelector('#vantar');if(v)v.remove()}
+  if(meta){const m=document.createElement('meta');m.name='arvako-egenkontroll';m.content=CFG.typ+(klar?':klar':':vantar');meta.appendChild(m)}
+  FIL={html:'<!doctype html>\n'+doc.outerHTML,namn:filnamn('')};
+  status('Dokumentet är klart — skicka det till Arvako');
+  $('#efter-skicka').hidden=false;
+}
+let FIL=null;
+async function delaFil(){
+  if(!FIL)return;
+  const f=new File([FIL.html],FIL.namn,{type:'text/html'});
+  if(navigator.canShare&&navigator.share){try{if(navigator.canShare({files:[f]})){await navigator.share({files:[f],title:FIL.namn});status('Skickat via delningsmenyn');return}}catch(e){if(e&&e.name==='AbortError'){status('Avbrutet — tryck igen när du vill skicka');return}}}
+  await meddela('Telefonen kan inte dela filen härifrån. Tryck Spara som fil och bifoga filen i ett mejl till ola.boving@arvakoenergi.se.');
+}
+async function laddaFil(){if(FIL)await sparaFil(FIL.html,FIL.namn,'Filen är sparad — bifoga den i ett mejl till ola.boving@arvakoenergi.se')}
+
+/* ---------- nytt projekt ---------- */
+async function nyttProjekt(){
+  if(!(await fraga('Rensa formuläret och börja på ett nytt projekt? Har du skickat dokumentet finns det kvar i din fil.','Rensa')))return;
+  for(const b of S.bilder)await bildBort(b.id);
+  const minne={ue:S.ue,orgnr:S.orgnr,instrument:S.instrument};
+  S=Object.assign(TOM(),minne);clearTimeout(timer);ls.set(NYCKEL,JSON.stringify(S));if(location.hash){location.replace(location.pathname);return}location.reload();
+}
+
+/* ---------- Arvako: slutför inkommen fil ---------- */
+let INKOMMEN=null,AR={rad:{},kom:{},namn:'',datum:idag(),sig:null,layout:null};
+function slutforOppna(){
+  $('#slutfor').hidden=false;$('#slutfor').scrollIntoView({behavior:'smooth'});
+}
+async function slutforLasFil(fil){
+  const txt=await fil.text();
+  const d=new DOMParser().parseFromString(txt,'text/html');
+  const m=d.querySelector('meta[name=arvako-egenkontroll]');
+  if(!m||!m.content.startsWith(CFG.typ+':')){meddela('Det här är inte ett '+CFG.titel.toLowerCase()+' från formuläret.');return}
+  INKOMMEN=d;
+  const rader=[...d.querySelectorAll('[data-ar-rad]')].map(el=>{const rad=el.closest('.rad');return{nr:el.dataset.arRad,vis:rad.querySelector('.nr').textContent,txt:rad.querySelector('.txt').childNodes[0].textContent}});
+  const proj=(d.querySelector('[data-proj]')||{}).textContent||'';
+  $('#sf-fil').textContent=fil.name+(proj?' · '+proj:'')+(m.content.endsWith(':klar')?' · redan slutfört — sparas som ny version':'');
+  const host=$('#sf-rader');host.innerHTML='';
+  rader.forEach(r=>{
+    const div=document.createElement('div');div.className='rad';
+    div.innerHTML=`<div class="nr">${esc(r.vis)}</div><div class="txt">${esc(r.txt)}</div><div class="linje"><div class="val" data-sf="${r.nr}"><button type="button" data-v="ok">OK</button><button type="button" data-v="ea">Inte aktuell</button><button type="button" data-v="avv">Avvikelse</button></div><div class="kom"><input data-sfkom="${r.nr}" placeholder="Kommentar"></div></div>`;
+    host.appendChild(div);
+  });
+  host.querySelectorAll('[data-sf] button').forEach(b=>b.onclick=()=>{const nr=b.parentElement.dataset.sf;AR.rad[nr]=AR.rad[nr]===b.dataset.v?'':b.dataset.v;b.parentElement.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.v===AR.rad[nr]))});
+  host.querySelectorAll('[data-sfkom]').forEach(i=>i.oninput=()=>{AR.kom[i.dataset.sfkom]=i.value});
+  $('#sf-steg2').hidden=false;
+}
+async function slutforSpara(){
+  if(!INKOMMEN)return;
+  const nrs=[...INKOMMEN.querySelectorAll('[data-ar-rad]')].map(e=>e.dataset.arRad);
+  const ej=nrs.filter(n=>!AR.rad[n]);
+  if(ej.length||!AR.namn||!AR.sig){meddela('Fyll i först: '+[ej.length?'alla projekteringsrader':'',!AR.namn?'namn':'',!AR.sig?'signatur':''].filter(Boolean).join(', ')+'.');return}
+  if(CFG.layout&&!AR.layout&&!(await fraga('Ingen stränglayout inlagd. Spara ändå?','Spara ändå')))return;
+  const d=INKOMMEN;const txt={ok:'OK',ea:'Inte aktuell',avv:'Avvikelse'};const tid=new Date().toISOString();
+  nrs.forEach(n=>{const el=d.querySelector(`[data-ar-rad="${n}"]`);el.textContent=txt[AR.rad[n]];el.className='ar-status satt '+AR.rad[n];const k=d.querySelector(`[data-ar-kom="${n}"]`);if(k)k.textContent=AR.kom[n]||'';const t=el.closest('.rad').querySelector('.tid');if(!t){const td=d.createElement('div');td.className='tid';td.textContent=fmtTid(tid);el.closest('.rad').appendChild(td)}});
+  const f=s=>d.querySelector(`[data-ar-f="${s}"]`);
+  if(f('namn')){f('namn').textContent=AR.namn;f('namn').classList.add('satt')}
+  if(f('datum')){f('datum').textContent=AR.datum;f('datum').classList.add('satt')}
+  if(f('sig'))f('sig').innerHTML=`<img src="${AR.sig}" alt="Signatur" style="width:100%;max-width:340px;height:auto;border-bottom:1px solid #777;display:block">`;
+  if(CFG.layout&&f('layout')&&AR.layout)f('layout').innerHTML=`<img src="${AR.layout}" alt="Stränglayout" style="max-width:100%;max-height:420px;display:block;border-radius:6px">`;
+  const v=d.querySelector('#vantar');if(v)v.remove();
+  const m=d.querySelector('meta[name=arvako-egenkontroll]');m.content=CFG.typ+':klar';
+  const s=d.querySelector('[data-stamp-ar]')||d.createElement('div');s.setAttribute('data-stamp-ar','');s.style.cssText='font-size:12px;color:#6b7280;margin:0 0 12px';s.textContent='Slutfört av Arvako '+new Date().toLocaleString('sv-SE');
+  const w=d.querySelector('.wrap');if(!s.parentNode)w.insertBefore(s,w.querySelector('header').nextSibling);
+  const proj=((d.querySelector('[data-proj]')||{}).textContent||'projekt').trim().replace(/[^\wåäöÅÄÖ-]+/g,'_');
+  await sparaFil('<!doctype html>\n'+d.documentElement.outerHTML,CFG.filprefix+'_'+proj+'_slutlig.html','Slutligt dokument sparat — lägg det i projektet och skicka till kunden');
+}
+
+/* ---------- Arvako: skapa projektlänk ---------- */
+function b64url(str){const by=new TextEncoder().encode(str);let bin='';by.forEach(b=>bin+=String.fromCharCode(b));return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
+async function skapaLank(){
+  const arRader=synligaRader().filter(arRad);
+  const ej=arRader.filter(r=>!(S.ar[r[0]]||{}).s).map(r=>vn(r[0]));
+  const sak=[];if(!S.projektnamn)sak.push('projekt');if(!S.adress)sak.push('adress');if(CFG.scen&&!S.scen)sak.push('vilket jobb');if(ej.length)sak.push('Arvakos rader '+ej.join(', '));if(!$('#fb-namn').value.trim())sak.push('namn');
+  if(sak.length){await meddela('Fyll i först: '+sak.join(', ')+'.');return}
+  const p={typ:CFG.typ};PFALT.forEach(k=>{if(S[k])p[k]=S[k]});
+  if(CFG.scen){p.scen=S.scen;const tv={};Object.keys(S.tillval).forEach(k=>{if(S.tillval[k])tv[k]=1});p.tillval=tv}
+  p.ar={};arRader.forEach(r=>{const a=S.ar[r[0]];p.ar[r[0]]=a.k?{s:a.s,k:a.k}:{s:a.s}});
+  p.arnamn=$('#fb-namn').value.trim();p.ardatum=$('#fb-datum').value||idag();
+  const url=location.origin+location.pathname+'#p='+b64url(JSON.stringify(p));
+  $('#fb-ut').value=url;$('#fb-resultat').hidden=false;
+}
+async function kopieraLank(){const t=$('#fb-ut');try{await navigator.clipboard.writeText(t.value);status('Länken är kopierad')}catch(e){t.focus();t.select();status('Markerad — kopiera med Cmd/Ctrl+C')}}
+function visaForifyllt(){
+  if(!P)return;
+  PFALT.forEach(k=>{if(P[k])document.querySelectorAll(`[data-k="${k}"]`).forEach(el=>{el.readOnly=true;el.classList.add('last')})});
+  const fy=document.querySelector('#s-projekt .fyll');if(fy){fy.textContent='Ifyllt av Arvako';fy.classList.remove('ue')}
+  document.querySelectorAll('input.last').forEach(el=>{const sm=el.parentElement.querySelector('small');if(sm)sm.hidden=true});
+  if(P.scen)document.querySelectorAll('[data-scen] button,.tillval button').forEach(b=>{b.disabled=true});
+  if(P.arnamn){
+    const f=x=>document.querySelector(`[data-ar-f="${x}"]`);
+    f('namn').textContent=P.arnamn;f('namn').classList.add('satt');
+    f('datum').textContent=P.ardatum||'';f('datum').classList.add('satt');
+    f('sig').innerHTML=`<div class="ar-esign">Godkänt elektroniskt av Arvako Energi AB<br>${esc(P.arnamn)} · ${esc(P.ardatum||'')}</div>`;
+    const t=$('#ar-signtid');if(t)t.textContent='Godkänt av Arvako innan arbetet.';
+    const lb=$('#layoutbild');if(lb)lb.innerHTML='<span>Stränglayouten finns i UE-underlaget för projektet.</span>';
+    const lh=$('#layout-hjalp');if(lh)lh.textContent='Stränglayouten finns i UE-underlaget från Arvako. Bekräfta att den är byggd så, eller beskriv ändringen och ta en bild.';
+  }
+  const i=$('#intro');if(i)i.insertAdjacentHTML('afterbegin','<p class="forifyllt-info"><b>Förifyllt av Arvako:</b> projektet och Arvakos rader är redan ifyllda. Du fyller i dina rader, bilderna och signerar.</p>');
+}
+
+/* ---------- start ---------- */
+function start(){
+  if(!S.sign_datum)S.sign_datum=idag();
+  bindFalt(document);uppdUe();renderScen();renderVillkor();renderCheck();renderMatt();renderAvv();renderFoton();
+  const sig=signatur($('#sig'),v=>{S.sig=v;spara()});sig.rita(S.sig);$('#sig-rensa').onclick=()=>sig.rensa();
+  $('#bildfiler').onchange=async e=>{const filer=[...e.target.files];if(!filer.length)return;let n=0;for(const f of filer){status(`Sparar bild ${++n} av ${filer.length} …`);const d=await krymp(f,1600);if(!d)continue;let i=S.bilder.length+1;while(S.bilder.some(b=>b.id==='F'+i))i++;const id='F'+i;await bildSpara(id,d);S.bilder.push({id,text:''})}e.target.value='';spara();renderFoton()};
+  $('#lagg-avv').onclick=()=>{S.avv.push({});renderAvv();spara();const inps=document.querySelectorAll('#avvlista input');inps[inps.length-1].focus()};
+  const ls2=$('#lagg-strang');if(ls2)ls2.onclick=()=>{S.strangar.push('S'+(S.strangar.length+1));renderMatt();spara()};
+  visaForifyllt();
+  $('#skicka').onclick=skicka;$('#dela-fil').onclick=delaFil;$('#ladda-fil').onclick=laddaFil;$('#efter-stang').onclick=()=>{$('#efter-skicka').hidden=true};
+  if(ARVAKO){$('#forbered').hidden=false;$('#arvako-lank').hidden=false;$('#skicka').hidden=true;$('#fb-datum').value=idag();$('#fb-skapa').onclick=skapaLank;$('#fb-kopiera').onclick=kopieraLank}$('#skrivut').onclick=()=>window.print();
+  document.querySelectorAll('.nytt-projekt').forEach(b=>b.onclick=nyttProjekt);
+  // Arvako
+  $('#arvako-lank').onclick=e=>{e.preventDefault();slutforOppna()};
+  $('#sf-fil-in').onchange=e=>{if(e.target.files[0])slutforLasFil(e.target.files[0])};
+  AR.namn=$('#sf-namn').value;$('#sf-namn').oninput=e=>AR.namn=e.target.value;$('#sf-datum').value=AR.datum;$('#sf-datum').oninput=e=>AR.datum=e.target.value;
+  const arsig=signatur($('#sf-sig'),v=>AR.sig=v);$('#sf-sig-rensa').onclick=()=>arsig.rensa();
+  const lf=$('#sf-layout');if(lf)lf.onchange=async e=>{if(!e.target.files[0])return;AR.layout=await krymp(e.target.files[0],1600);$('#sf-layout-visa').innerHTML=`<img src="${AR.layout}" alt="" style="max-width:100%;max-height:240px;border-radius:6px">`};
+  $('#sf-spara').onclick=slutforSpara;
+  status(lagringOk?'Sparat i telefonen':'');
+  // Arvako-länken syns bara för den som kan redigera artefakten (eller utanför claude.ai)
+  if(CL){CL.use('user').then(u=>{if(u&&u.canEdit&&u.canEdit())$('#arvako-lank').hidden=false}).catch(()=>{})}
+}
+start();
+addEventListener('hashchange',()=>location.reload());
+
+</script>
+</body>
+</html>
