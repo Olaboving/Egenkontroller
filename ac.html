@@ -636,6 +636,104 @@ function saknas(){
   return s;
 }
 
+/* ---------- Arvako: inbyggd slutförfunktion i UE:s skickade dokument ---------- */
+const ASK_CSS='@media print{#ask-bar,#ask-sign,.ask-tmp{display:none!important}}';
+const ASK_JS=`(function(){
+var m=document.querySelector('meta[name=arvako-egenkontroll]');
+if(!m||!/:vantar$/.test(m.content))return;
+var TYP=m.content.split(':')[0];
+var F='Montserrat,"Segoe UI",system-ui,sans-serif';
+var IN='font:13px '+F+';padding:7px 9px;border:1px solid #c3c7cc;border-radius:6px';
+var bar=document.createElement('div');bar.id='ask-bar';
+bar.setAttribute('style','position:sticky;top:0;z-index:60;background:#2d6a4f;color:#fff;padding:10px 14px;font:600 13.5px/1.4 '+F+';display:flex;gap:10px;align-items:center;flex-wrap:wrap');
+bar.innerHTML='<span style="flex:1;min-width:200px">Väntar på Arvakos granskning — projekteringens rader är inte ifyllda.</span><button type="button" id="ask-start" style="font:600 13px '+F+';padding:8px 14px;border-radius:7px;border:0;background:#fff;color:#2d6a4f;cursor:pointer">Arvako: fyll i och signera</button>';
+document.body.insertBefore(bar,document.body.firstChild);
+var UI=null,SIG=null;
+function el(t,st,html){var e=document.createElement(t);if(st)e.setAttribute('style',st);if(html!=null)e.innerHTML=html;return e}
+function krymp(f,cb){var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var k=Math.min(1,1600/im.width);var c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);cb(c.toDataURL('image/jpeg',0.82))};im.src=r.result};r.readAsDataURL(f)}
+function starta(){
+ if(UI)return;UI={rad:{},kom:{}};
+ var alla=document.querySelectorAll('[data-ar-rad]');
+ for(var i=0;i<alla.length;i++)(function(sp){
+  var nr=sp.getAttribute('data-ar-rad');
+  var ks=document.querySelector('[data-ar-kom="'+nr+'"]');
+  var box=el('span','display:inline-flex;gap:6px;flex-wrap:wrap;align-items:center');
+  box.className='ask-tmp';box.setAttribute('data-ask',nr);
+  [['ok','OK'],['ea','Inte aktuell'],['avv','Avvikelse']].forEach(function(a){
+   var b=el('button','font:600 12.5px '+F+';padding:7px 11px;border:1px solid #c3c7cc;border-radius:6px;background:#fff;color:#1c1f23;cursor:pointer');
+   b.type='button';b.textContent=a[1];b.setAttribute('data-v',a[0]);
+   b.onclick=function(){UI.rad[nr]=a[0];var kn=box.querySelectorAll('button');for(var j=0;j<kn.length;j++){var pa=kn[j].getAttribute('data-v')===a[0];kn[j].style.background=pa?'#2d6a4f':'#fff';kn[j].style.color=pa?'#fff':'#1c1f23';kn[j].style.borderColor=pa?'#2d6a4f':'#c3c7cc'}};
+   box.appendChild(b)});
+  var inp=el('input',IN+';min-width:170px');inp.placeholder='Kommentar';inp.value=ks?ks.textContent:'';UI.kom[nr]=inp.value;
+  inp.oninput=function(){UI.kom[nr]=inp.value};
+  box.appendChild(inp);
+  sp.style.display='none';if(ks)ks.style.display='none';
+  sp.parentNode.insertBefore(box,sp);
+ })(alla[i]);
+ var lay=document.querySelector('[data-ar-f="layout"]');
+ if(lay){
+  var rad=el('div','margin:8px 0;font:13px '+F);rad.className='ask-tmp';
+  rad.innerHTML='<b>Stränglayout ändrad under installationen?</b> Byt bilden: ';
+  var lf=document.createElement('input');lf.type='file';lf.accept='image/*';rad.appendChild(lf);
+  lf.onchange=function(){var f=lf.files[0];if(!f)return;krymp(f,function(d){lay.innerHTML='<img src="'+d+'" alt="Stränglayout" style="max-width:100%;max-height:420px;display:block;border-radius:6px">'})};
+  lay.parentNode.insertBefore(rad,lay.nextSibling);
+ }
+ var s=el('div','border:2px solid #2d6a4f;border-radius:10px;padding:14px;margin:18px 0;background:#fff;color:#1c1f23;font:14px '+F);
+ s.id='ask-sign';
+ s.innerHTML='<b style="font:600 15px '+F+'">Projektörens signering</b>'+
+  '<div style="display:flex;gap:12px;flex-wrap:wrap;margin:10px 0">'+
+  '<label style="font:12px '+F+'">Namn<br><input id="ask-namn" value="Ola Böving" style="'+IN.replace(/"/g,'&quot;')+'"></label>'+
+  '<label style="font:12px '+F+'">Datum<br><input id="ask-datum" type="date" style="'+IN.replace(/"/g,'&quot;')+'"></label></div>'+
+  '<div style="font:12px '+F+';margin-bottom:4px">Signatur</div>'+
+  '<canvas id="ask-sig" width="600" height="160" style="height:90px;width:100%;max-width:420px;border:1px dashed #c3c7cc;border-radius:6px;background:#f3f4f6;touch-action:none;display:block"></canvas>'+
+  '<button type="button" id="ask-rensa" style="font:12px '+F+';margin-top:6px;background:none;border:0;color:#b42318;cursor:pointer;padding:0">Rensa signaturen</button>'+
+  '<div style="margin-top:14px"><button type="button" id="ask-spara" style="font:600 14px '+F+';padding:10px 16px;border-radius:8px;border:0;background:#2d6a4f;color:#fff;cursor:pointer">Spara slutligt dokument</button></div>';
+ (document.querySelector('.wrap')||document.body).appendChild(s);
+ document.getElementById('ask-datum').value=new Date().toISOString().slice(0,10);
+ var cv=document.getElementById('ask-sig'),cx=cv.getContext('2d');cx.lineWidth=2.4;cx.lineCap='round';cx.strokeStyle='#1c1f23';
+ var rit=false;function pos(e){var r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)*cv.width/r.width,y:(e.clientY-r.top)*cv.height/r.height}}
+ cv.addEventListener('pointerdown',function(e){rit=true;try{cv.setPointerCapture(e.pointerId)}catch(_){}var p=pos(e);cx.beginPath();cx.moveTo(p.x,p.y)});
+ cv.addEventListener('pointermove',function(e){if(!rit)return;var p=pos(e);cx.lineTo(p.x,p.y);cx.stroke()});
+ ['pointerup','pointercancel'].forEach(function(ev){cv.addEventListener(ev,function(){if(rit){rit=false;SIG=cv.toDataURL()}})});
+ document.getElementById('ask-rensa').onclick=function(){cx.clearRect(0,0,cv.width,cv.height);SIG=null};
+ document.getElementById('ask-spara').onclick=sparaSlut;
+ bar.firstChild.textContent='Fyll i projekteringens rader vid varje punkt, signera längst ner och spara.';
+ document.getElementById('ask-start').style.display='none';
+ s.scrollIntoView({behavior:'smooth'});
+}
+function sparaSlut(){
+ var alla=[].slice.call(document.querySelectorAll('[data-ar-rad]'));
+ var ej=alla.filter(function(sp){return !UI.rad[sp.getAttribute('data-ar-rad')]});
+ var avvUtan=alla.filter(function(sp){var nr=sp.getAttribute('data-ar-rad');return UI.rad[nr]==='avv'&&!(UI.kom[nr]||'').replace(/\\s/g,'')});
+ var namn=document.getElementById('ask-namn').value.replace(/^\\s+|\\s+$/g,'');
+ if(ej.length||avvUtan.length||!namn||!SIG){alert('Fyll i först: '+[ej.length?ej.length+' rader':'',avvUtan.length?'kommentar på avvikelser':'',!namn?'namn':'',!SIG?'signatur':''].filter(Boolean).join(', ')+'.');return}
+ var TXT={ok:'OK',ea:'Inte aktuell',avv:'Avvikelse'};
+ var datum=document.getElementById('ask-datum').value||new Date().toISOString().slice(0,10);
+ alla.forEach(function(sp){var nr=sp.getAttribute('data-ar-rad');
+  sp.textContent=TXT[UI.rad[nr]];sp.className='ar-status satt '+UI.rad[nr];sp.style.display='';
+  var ks=document.querySelector('[data-ar-kom="'+nr+'"]');if(ks){ks.textContent=UI.kom[nr]||'';ks.style.display=''}});
+ function f(x){return document.querySelector('[data-ar-f="'+x+'"]')}
+ if(f('namn')){f('namn').textContent=namn;f('namn').className+=' satt'}
+ if(f('datum')){f('datum').textContent=datum;f('datum').className+=' satt'}
+ if(f('sig'))f('sig').innerHTML='<img src="'+SIG+'" alt="Signatur" style="width:100%;max-width:340px;height:auto;border-bottom:1px solid #777;display:block">';
+ var v=document.getElementById('vantar');if(v)v.parentNode.removeChild(v);
+ m.content=TYP+':klar';
+ var st=el('div','font-size:12px;color:#6b7280;margin:0 0 12px');st.textContent='Slutfört av Arvako '+new Date().toLocaleString('sv-SE');
+ var w=document.querySelector('.wrap');if(w){var h=w.querySelector('header');w.insertBefore(st,h?h.nextSibling:w.firstChild)}
+ var bort=document.querySelectorAll('.ask-tmp,#ask-sign,#ask-bar,#ask-css,#ask-js');
+ for(var i=0;i<bort.length;i++)bort[i].parentNode.removeChild(bort[i]);
+ var proj=((document.querySelector('[data-proj]')||{}).textContent||'projekt').replace(/^\\s+|\\s+$/g,'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^\\w-]+/g,'_');
+ var html='<!doctype html>\\n'+document.documentElement.outerHTML;
+ var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));
+ a.download='Egenkontroll_'+TYP.toUpperCase()+'_'+proj+'_slutlig.html';
+ document.body.appendChild(a);a.click();
+ setTimeout(function(){a.parentNode&&a.parentNode.removeChild(a)},1500);
+ alert('Slutligt dokument sparat bland hämtade filer — lägg det i projektets mapp. Den här fliken visar samma färdiga dokument.');
+}
+document.getElementById('ask-start').onclick=starta;
+})();
+`;
+
 /* ---------- montören: Skicka ---------- */
 function filnamn(suffix){return CFG.filprefix+'_'+(S.projektnamn||'projekt').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\w-]+/g,'_').replace(/^_+|_+$/g,'')+suffix+'.html'}
 function cssPath(el){const p=[];while(el&&el.nodeType===1&&el.tagName!=='HTML'){let s=el.tagName.toLowerCase();if(el.id){s+='#'+el.id;p.unshift(s);break}let i=1,sib=el;while((sib=sib.previousElementSibling))if(sib.tagName===el.tagName)i++;s+=`:nth-of-type(${i})`;p.unshift(s);el=el.parentElement}return p.join('>')}
@@ -675,6 +773,10 @@ async function skicka(){
   const klar=!!(P&&P.arnamn);
   if(klar){const v=doc.querySelector('#vantar');if(v)v.remove()}
   if(meta){const m=document.createElement('meta');m.name='arvako-egenkontroll';m.content=CFG.typ+(klar?':klar':':vantar');meta.appendChild(m)}
+  if(!klar){
+    const ac=document.createElement('style');ac.id='ask-css';ac.textContent=ASK_CSS;doc.querySelector('head').appendChild(ac);
+    const aj=document.createElement('script');aj.id='ask-js';aj.textContent=ASK_JS;doc.querySelector('body').appendChild(aj);
+  }
   FIL={html:'<!doctype html>\n'+doc.outerHTML,namn:filnamn('')};
   status('Dokumentet är klart — skicka det till Arvako');
   $('#efter-skicka').hidden=false;
