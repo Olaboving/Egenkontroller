@@ -178,6 +178,8 @@ input.last{background:transparent;border-color:transparent;padding-left:0;color:
 .efter-bg{position:fixed;inset:0;background:rgba(20,24,28,.45);z-index:900;display:flex;align-items:center;justify-content:center;padding:16px}
 .efter-bg .efter{max-width:440px;width:100%;margin:0;box-shadow:0 8px 30px rgba(0,0,0,.25)}
 [hidden]{display:none!important}
+body.ar-lage #intro,body.ar-lage #s-utforande,body.ar-lage #s-layout,body.ar-lage #s-strang,body.ar-lage #s-avv,body.ar-lage #s-bilder,body.ar-lage #s-sign,body.ar-lage .dock,body.ar-lage #checklistor .sek:not(.sek-ar),body.ar-lage #s-projekt small{display:none!important}
+body.ar-lage .wrap{padding-bottom:40px}
 .efter .knapprad{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
 .efter .knapprad button{font:inherit;font-size:15px;padding:11px 16px;border-radius:8px;cursor:pointer;border:1px solid var(--gron)}
 #dela-fil{background:var(--gron);color:#fff}#ladda-fil{background:#fff;color:var(--gron)}
@@ -204,9 +206,9 @@ input.last{background:transparent;border-color:transparent;padding-left:0;color:
 <div class="vantar" id="vantar" style="display:none"><b>Väntar på Arvakos signering.</b> Arvakos del (projekteringen, stränglayouten och Arvakos signatur) fylls i när dokumentet kommit in. Dokumentet går till kunden först därefter.</div>
 
 <section class="forbered" id="forbered" hidden>
-  <h2>Arvako: skapa projektlänk</h2>
-  <p class="hjalp">Fyll i projektet och Arvakos rader nedan, sedan namn och datum här. Länken öppnar formuläret med allt det ifyllt och godkänt; montören fyller i resten och skickar ett komplett dokument. Lägg länken som knapp i UE-underlaget.</p>
-  <div class="rader"><div class="f"><label>Godkänns av</label><input id="fb-namn" value="Ola Böving"></div><div class="f"><label>Datum</label><input id="fb-datum" type="date"></div></div>
+  <h2>Godkänn och skapa länk</h2>
+  <p class="hjalp">Ditt namn och datum är din underskrift. I dokumentet står det <i>Godkänt elektroniskt av Arvako Energi AB</i> med namn och datum. Länken öppnar formuläret med projektet och Arvakos rader ifyllda och låsta; montören fyller i resten och skickar ett komplett dokument. Lägg länken som knapp i UE-underlaget.</p>
+  <div class="rader"><div class="f"><label>Godkänt av</label><input id="fb-namn" value="Ola Böving"></div><div class="f"><label>Datum</label><input id="fb-datum" type="date"></div></div>
   <div style="margin-top:10px"><button type="button" id="fb-skapa" style="font:inherit;font-size:14px;padding:10px 16px;border-radius:8px;border:1px solid var(--gron);background:var(--gron);color:#fff;cursor:pointer">Skapa länk</button></div>
   <div id="fb-resultat" hidden style="margin-top:10px"><textarea id="fb-ut" readonly></textarea><button type="button" class="rensa" id="fb-kopiera">Kopiera länken</button></div>
 </section>
@@ -727,7 +729,7 @@ function start(){
   const ls2=$('#lagg-strang');if(ls2)ls2.onclick=()=>{S.strangar.push('S'+(S.strangar.length+1));renderMatt();spara()};
   visaForifyllt();
   $('#skicka').onclick=skicka;$('#dela-fil').onclick=delaFil;$('#ladda-fil').onclick=laddaFil;$('#efter-stang').onclick=()=>{$('#efter-skicka').hidden=true};
-  if(ARVAKO){$('#forbered').hidden=false;$('#arvako-lank').hidden=false;$('#skicka').hidden=true;$('#fb-datum').value=idag();$('#fb-skapa').onclick=skapaLank;$('#fb-kopiera').onclick=kopieraLank}$('#skrivut').onclick=()=>window.print();
+  if(ARVAKO){document.body.classList.add('ar-lage');$('#checklistor').after($('#forbered'));const fy=document.querySelector('#s-projekt .fyll');if(fy){fy.textContent='Arvako fyller i';fy.classList.remove('ue')}document.querySelectorAll('#s-projekt label').forEach(l=>{if(l.textContent==='Ert företag')l.textContent='UE-företag'});$('#forbered').hidden=false;$('#arvako-lank').hidden=false;$('#skicka').hidden=true;$('#fb-datum').value=idag();$('#fb-skapa').onclick=skapaLank;$('#fb-kopiera').onclick=kopieraLank}$('#skrivut').onclick=()=>window.print();
   document.querySelectorAll('.nytt-projekt').forEach(b=>b.onclick=nyttProjekt);
   // Arvako
   $('#arvako-lank').onclick=e=>{e.preventDefault();slutforOppna()};
