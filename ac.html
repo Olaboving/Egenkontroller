@@ -453,14 +453,15 @@ try{const m=location.hash.match(/^#p=([A-Za-z0-9_-]+)/);if(m){let b=m[1].replace
 function hsh(x){let h=5381;for(const c of x)h=((h*33)^c.charCodeAt(0))>>>0;return h.toString(36)}
 const PFALT=['projektnamn','kund','adress','ue','orgnr'];
 const STATUSTXT={ok:'OK',ea:'Inte aktuell',avv:'Avvikelse'};
-const NYCKEL='arvako-egenkontroll-'+CFG.typ+'-utkast-v2'+(P?'-p'+hsh(location.hash):'')+(ARVAKO?'-arvako':'');
+const NYCKEL='arvako-egenkontroll-'+CFG.typ+'-utkast-v2'+(/^#[pk]=/.test(location.hash)?'-p'+hsh(location.hash):'')+(ARVAKO?'-arvako':'');
 const MINNE='arvako-egenkontroll-minne';   // företag, org.nr, instrument — sparas mellan projekt
 const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v);return true}catch(e){return false}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
 const TOM=()=>({scen:'',tillval:{},strangar:['S1','S2'],matt:{},rad:{},kom:{},tid:{},val:{},avv:[],bilder:[],sig:null,sign_datum:idag()});
 let S=TOM();
 try{Object.assign(S,JSON.parse(ls.get(NYCKEL)||'{}'))}catch(e){}
 try{const m=JSON.parse(ls.get(MINNE)||'{}');['ue','orgnr','instrument'].forEach(k=>{if(!S[k]&&m[k])S[k]=m[k]})}catch(e){}
-if(P){PFALT.forEach(k=>{if(P[k])S[k]=P[k]});if(CFG.scen){if(P.scen)S.scen=P.scen;S.tillval=P.tillval||{}}}
+function applyP(){if(P){PFALT.forEach(k=>{if(P[k])S[k]=P[k]});if(CFG.scen){if(P.scen)S.scen=P.scen;S.tillval=P.tillval||{}}}}
+applyP();
 if(!S.ar)S.ar={};
 let timer,lagringOk=true;
 function spara(){clearTimeout(timer);timer=setTimeout(()=>{lagringOk=ls.set(NYCKEL,JSON.stringify(S));const m={ue:S.ue||'',orgnr:S.orgnr||'',instrument:S.instrument||''};ls.set(MINNE,JSON.stringify(m));status(lagringOk?'Sparat i telefonen '+new Date().toLocaleTimeString('sv-SE',{hour:'2-digit',minute:'2-digit'}):'Telefonen sparar inte utkastet — fyll i och skicka utan att stänga sidan')},250)}
@@ -767,8 +768,8 @@ function visaForifyllt(){
     f('datum').textContent=P.ardatum||'';f('datum').classList.add('satt');
     f('sig').innerHTML=`<div class="ar-esign">Signerat elektroniskt av projektören, Arvako Energi AB<br>${esc(P.arnamn)} · ${esc(P.ardatum||'')}</div>`;
     const t=$('#ar-signtid');if(t)t.textContent='Godkänt av Arvako innan arbetet.';
-    const lb=$('#layoutbild');if(lb)lb.innerHTML='<span>Stränglayouten finns i UE-underlaget för projektet.</span>';
-    const lh=$('#layout-hjalp');if(lh)lh.textContent='Stränglayouten finns i UE-underlaget från Arvako. Bekräfta att den är byggd så, eller beskriv ändringen och ta en bild.';
+    const lb=$('#layoutbild');if(lb)lb.innerHTML=P.layout?`<img src="${P.layout}" alt="Stränglayout" style="max-width:100%;max-height:420px;display:block;border-radius:6px">`:'<span>Stränglayouten finns i UE-underlaget för projektet.</span>';
+    const lh=$('#layout-hjalp');if(lh)lh.textContent=P.layout?'Stränglayouten från platsbesöket. Bekräfta att den är byggd så, eller beskriv ändringen och ta en bild.':'Stränglayouten finns i UE-underlaget från Arvako. Bekräfta att den är byggd så, eller beskriv ändringen och ta en bild.';
   }
   const i=$('#intro');if(i)i.insertAdjacentHTML('afterbegin','<p class="forifyllt-info"><b>Förifyllt av Arvako:</b> projektet och Arvakos rader är redan ifyllda. Du fyller i dina rader, bilderna och signerar.</p>');
 }
@@ -796,7 +797,22 @@ function start(){
   // Arvako-länken syns bara för den som kan redigera artefakten (eller utanför claude.ai)
   if(CL){CL.use('user').then(u=>{if(u&&u.canEdit&&u.canEdit())$('#arvako-lank').hidden=false}).catch(()=>{})}
 }
-start();
+/* ---------- projektfil: #k=<id>.<nyckel> — krypterad fil p/<id>.txt (AES-GCM, nyckeln finns bara i länken) ---------- */
+function ub64(x){let b=x.replace(/-/g,'+').replace(/_/g,'/');while(b.length%4)b+='=';return Uint8Array.from(atob(b),c=>c.charCodeAt(0))}
+async function lasProjektfil(){
+  const m=location.hash.match(/^#k=([a-z0-9]+)\.([A-Za-z0-9_-]+)/);if(!m)return;
+  try{
+    const r=await fetch('p/'+m[1]+'.txt',{cache:'no-store'});if(!r.ok)throw new Error('saknas');
+    const raw=ub64((await r.text()).trim());const iv=raw.slice(0,12),data=raw.slice(12);
+    const key=await crypto.subtle.importKey('raw',ub64(m[2]),'AES-GCM',false,['decrypt']);
+    const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv},key,data);
+    const p=JSON.parse(new TextDecoder().decode(pt));if(p.typ&&p.typ!==CFG.typ)throw new Error('fel formulär');
+    P=p;applyP();
+  }catch(e){
+    const w=$('.wrap');if(w)w.insertAdjacentHTML('afterbegin','<div class="utkast" style="display:block">Projektet kunde inte läsas från länken. Kontrollera att du öppnat hela länken från underlaget, eller ring Arvako.</div>');
+  }
+}
+lasProjektfil().then(start);
 addEventListener('hashchange',()=>location.reload());
 
 </script>
