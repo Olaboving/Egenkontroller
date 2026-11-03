@@ -647,7 +647,7 @@ function starta(){
  document.getElementById('ask-spara').onclick=sparaSlut;
  bar.firstChild.textContent='Fyll i projekteringens rader vid varje punkt, signera längst ner och spara.';
  document.getElementById('ask-start').style.display='none';
- s.scrollIntoView({behavior:'smooth'});
+ var forsta=document.querySelector('[data-ask]');(forsta?forsta.closest('.rad')||forsta:s).scrollIntoView({behavior:'smooth',block:'start'});
 }
 function sparaSlut(){
  var alla=[].slice.call(document.querySelectorAll('[data-ar-rad]'));
