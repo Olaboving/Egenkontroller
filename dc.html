@@ -136,6 +136,7 @@ body.klar .utkast{display:block}
 body.klar .avvsamling{display:block}
 @page{size:A4;margin:14mm}
 @media print{
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
   body{background:#fff;color:#000;font-size:12px}
   .wrap{max-width:none;padding:0}
   .dock,.intro,.arvakolage,.bort,.byt,.hjalp,.fyll,.varn,.rensa,.ladda,.lista,.f small,.ta,#lagg-avv,#lagg-strang{display:none!important}
