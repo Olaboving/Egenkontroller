@@ -337,6 +337,7 @@ const CHECK = [
     ['A2','Effektbegränsning av växelriktaren bestämd utifrån huvudsäkringen och angiven i UE-underlaget',{ar:1}],
     ['A3','Installationsmedgivande från nätägaren finns',{ar:1}],
     ['A4','Den befintliga anläggningen ingår inte i Arvakos leverans; bara det som anges i UE-underlaget utförs',{ar:1,s:'2,3'}],
+    ['A5','Backup-omfattningen (vilka grupper som ligger i backup-centralen) bestämd och godkänd av kunden i bilagan Backup-omfattning',{ar:1,t:'odrift'}],
   ]},
   {id:'mont', titel:'Montage', vem:'', fyll:'Elektrikern', rader:[
     ['1.1','Växelriktare och batteri monterade enligt tillverkarens anvisningar',{s:'2,3'}],
@@ -386,9 +387,14 @@ const CHECK = [
     ['6.4','Styrenhet installerad och ansluten (Tibber Pulse/Bridge, Enequi Core eller motsvarande)'],
   ]},
   {id:'odrift', titel:'Ö-drift', vem:'', fyll:'Elektrikern', t:'odrift', rader:[
-    ['7.1','Jordtag utfört',{v:[['jt','Ω']]}],
-    ['7.2','Backup-grupper inkopplade enligt UE-underlaget'],
-    ['7.3','Omkoppling till ö-drift testad vid simulerat nätbortfall'],
+    ['7.1','Jordtag utfört och anslutet till huvudjordningsskenan i huvudcentralen',{v:[['jt','Ω']]}],
+    ['7.2','Backup-centralen monterad; grupperna enligt UE-underlaget flyttade, märkta och med jordfelsbrytare 30 mA'],
+    ['7.3','Förbikopplingsomkopplaren (automatisk RKO) testad: växelriktaren frånslagen ger nätmatning till backup-centralen. Sigenergy med gateway: Inte aktuell'],
+    ['7.4','N–PE-förbindningen i ö-drift enligt tillverkarens anvisning, ingen parallell N–PE-förbindning i backup-centralen'],
+    ['7.5','Mätning i ö-drift: kortslutningsström vid backup-centralen och slingimpedans längst ut på den längsta backup-gruppen',{v:[['ik','A','Ik central'],['zs','Ω','Zs längst ut']]}],
+    ['7.6','Utlösningsvillkoret verifierat för varje backup-grupp mot växelriktarens felström; beräkningen bifogas (EL-VIS eller motsvarande)'],
+    ['7.7','Jordfelsbrytarna i backup-centralen provade i ö-drift',{v:[['jfbo','ms','utlöser']]}],
+    ['7.8','Omkoppling till ö-drift och tillbaka till nät testad vid simulerat nätbortfall'],
   ]},
   {id:'ladd', titel:'Laddbox', vem:'', fyll:'Elektrikern', t:'laddbox', rader:[
     ['8.1','Laddboxen monterad enligt tillverkarens anvisningar'],
@@ -404,6 +410,7 @@ const CHECK = [
     ['9.5','Gruppförteckning uppdaterad'],
     ['9.6','Märkning för batterilagring'],
     ['9.7','Märkning att anläggningen kan vara spänningssatt vid nätbortfall',{t:'odrift'}],
+    ['9.8','Backup-centralen märkt: matas från växelriktarens backup-port, med gruppförteckning',{t:'odrift'}],
   ]},
 ];
 const BILDLISTA = [
@@ -417,6 +424,8 @@ const BILDLISTA = [
   ['DC-inkopplingen i den nya växelriktaren, strängmärkning synlig','3'],
   ['Märkningen vid frånskiljare och batteri',''],
   ['Jordtaget och PUS-skenan','odrift'],
+  ['Backup-centralen öppen och dess gruppförteckning, läsbar','odrift'],
+  ['Instrumentet vid mätningen i ö-drift (7.5)','odrift'],
   ['Laddboxen monterad','laddbox'],
 ];
 const SCENTEXT = {
