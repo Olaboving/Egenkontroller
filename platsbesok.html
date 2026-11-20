@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Platsbesök – Arvako</title>
+<style>
+:root{--bg:#f3f4f6;--yta:#fff;--text:#1c1f23;--svag:#6b7280;--ln:#dadee2;--ln2:#edeff1;--falt:#f7f9fa;--gron:#2d6a4f;--gm:#f0f6f2;--gk:#cbe0d4;--dc:#1b6b4a;--ac:#b45309;--rod:#b42318}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 -apple-system,"Segoe UI",Helvetica,Arial,sans-serif}
+.wrap{max-width:720px;margin:0 auto;padding:0 14px 140px}
+header{padding:16px 0 10px;border-bottom:2.5px solid var(--gron);margin-bottom:12px}
+header h1{font-size:21px;margin:0}header .s{font-size:13px;color:var(--svag)}
+section{background:var(--yta);border:1px solid var(--ln);border-radius:12px;padding:14px;margin-bottom:12px}
+section h2{font-size:16px;margin:0 0 10px;display:flex;gap:8px;align-items:center}
+.tag{font-size:10px;font-weight:700;letter-spacing:.06em;padding:2px 6px;border-radius:4px}
+.tag.dc{background:#e6f1ec;color:var(--dc)}.tag.ac{background:#fbeedd;color:var(--ac)}.tag.b{background:#eef1f3;color:#4a5058}
+.rader{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.f{display:flex;flex-direction:column;gap:3px;min-width:0}.f.hel{grid-column:1/-1}
+.f label{font-size:12px;color:#3c434a;font-weight:600}
+.f input,.f select,.f textarea{font:inherit;font-size:16px;padding:9px 10px;border:1px solid var(--ln);border-radius:8px;background:var(--falt);color:var(--text);width:100%;min-height:44px}
+.f textarea{min-height:80px}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{font:inherit;font-size:14px;padding:8px 12px;border-radius:20px;border:1px solid var(--ln);background:#fff;min-height:40px}
+.seg button.pa{background:var(--gron);border-color:var(--gron);color:#fff}
+.bilder{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.bild{position:relative;aspect-ratio:4/3;border:1.5px dashed #c3c7cc;border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:center;text-align:center;font-size:12px;color:var(--svag);padding:4px;overflow:hidden}
+.bild input{position:absolute;inset:0;opacity:0;width:100%;height:100%}
+.bild.har{border:1px solid var(--gk);padding:0}
+.bild img{width:100%;height:100%;object-fit:cover;display:block}
+.bild .n{position:absolute;left:0;bottom:0;right:0;background:rgba(0,0,0,.6);color:#fff;font-size:10.5px;padding:2px 4px;text-align:left}
+.bild .ok{position:absolute;right:4px;top:4px;background:var(--gron);color:#fff;border-radius:10px;font-size:10px;padding:1px 6px}
+.bild .x{position:absolute;left:4px;top:4px;border:0;background:rgba(0,0,0,.6);color:#fff;border-radius:50%;width:24px;height:24px;font-size:14px;z-index:2}
+.plus{border-style:dashed;color:var(--gron);font-weight:600}
+.notis{background:#fff8e6;border-radius:8px;padding:9px 11px;font-size:13px;color:#7c4a06;margin-bottom:10px}
+.grupp{border:1px solid var(--ln);border-radius:8px;padding:10px;margin-bottom:8px}
+.dock{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--ln);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;gap:8px;align-items:center;flex-wrap:wrap;z-index:5}
+.dock .st{flex:1 1 100%;font-size:12.5px;color:var(--svag)}
+.dock button{flex:1;font:inherit;font-size:15px;padding:11px 8px;border-radius:9px;border:1px solid var(--gron);background:var(--gron);color:#fff;min-height:46px}
+.dock button.sek{background:#fff;color:var(--gron)}
+.tillval button{font-size:13px}
+nav.hopp{display:flex;gap:6px;overflow-x:auto;padding:4px 0 10px;position:sticky;top:0;background:var(--bg);z-index:4}
+nav.hopp a{flex:none;font-size:13px;padding:6px 10px;border-radius:16px;background:#fff;border:1px solid var(--ln);color:var(--text);text-decoration:none}
+nav.hopp a.klar{border-color:var(--gron);color:var(--gron)}
+body.ut .dock,body.ut input[type=file],body.ut .x,body.ut .plus,body.ut nav.hopp,body.ut .notis,body.ut .ejut{display:none!important}
+body.ut .bilder{grid-template-columns:repeat(2,1fr)}
+body.ut .bild{aspect-ratio:auto}body.ut .bild img{height:auto}
+body.ut .bild .n{position:static;background:none;color:#333;font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><h1>Platsbesök</h1><div class="s" id="sub">Arvako Energi</div></header>
+<nav class="hopp" id="hopp"></nav>
+<div id="flode"></div>
+</div>
+<div class="dock">
+  <div class="st" id="status">Sparat i telefonen</div>
+  <button class="sek" id="sparabilder">Spara bilder</button>
+  <button id="skicka">Skicka underlag</button>
+</div>
+<script>
+/* Platsbesök, fältversion. Allt sparas i telefonen direkt: fälten i localStorage, varje bild i IndexedDB
+   när den tagits. Skicka underlag ger en fil med alla fält och bilder inbäddade. Inga kunddata i sidan;
+   kunden kommer från länkens #-del (lämnar aldrig telefonen). */
+const STOPP=[
+ {id:'kund',t:'Kund och omfattning',tag:'b',falt:[['namn','Kund','t'],['adress','Adress','t'],['tel','Telefon','t'],['natagare','Nätägare','t']],
+  tillval:true},
+ {id:'ankomst',t:'Ankomst och tillträde',tag:'b',bilder:['Uppfart och lossning','Huset framifrån'],
+  falt:[['lossplats','Lossningsplats','s',['Uppfarten','Gatan','Gräsytan']],['loss_tak','Lossning → taksida, m','n'],['loss_batt','Lossning → batteriet, m','n'],['forvaring','Materialförvaring','s',['Garaget','Carport','Förråd','Utomhus']]]},
+ {id:'befintlig',t:'Befintlig anläggning',tag:'dc',villkor:'befintlig',bilder:['Växelriktaren','Märkskylten','Strängarnas anslutning'],
+  falt:[['bef_fabrikat','Fabrikat och modell','t'],['bef_kw','AC-effekt, kW','n'],['bef_ar','Årsmodell','n'],['bef_strangar','Antal strängar','n'],['bef_opt','Optimerare','seg',['Ja','Nej']],['bef_gamla','Den gamla växelriktaren','s',['Sitter kvar, kompletteras','Demonteras, lämnas till kunden','Demonteras, tas med av oss']]]},
+ {id:'tak',t:'Taket',tag:'dc',bilder:['Drönare','Taksida 1','Taksida 2','Genomföringar','Nock och takfot','Läkten/infästningen under'],
+  falt:[['ts1_rikt','Taksida 1, riktning','t'],['ts1_lut','Taksida 1, lutning °','n'],['ts1_pan','Taksida 1, paneler','n'],['ts2_rikt','Taksida 2, riktning','t'],['ts2_lut','Taksida 2, lutning °','n'],['ts2_pan','Taksida 2, paneler','n'],
+   ['takmat','Takmaterial','s',['Korrugerad plåt','Falsad plåt','Betongpannor på läkt','Tegelpannor på läkt','Papp på råspont']]],
+  notis:'Montagesystemet väljer säljaren i offerten. Fotografera infästningsunderlaget – det avgör vad montören lastar.'},
+ {id:'stallning',t:'Ställning',tag:'dc',bilder:['Fasad 1','Fasad 2'],
+  falt:[['st1_b','Fasad 1, bredd m','n'],['st1_h','Fasad 1, höjd m','n'],['st2_b','Fasad 2, bredd m','n'],['st2_h','Fasad 2, höjd m','n'],['framkomligt','Framkomligt runt huset','seg',['Ja','Delvis','Nej']]]},
+ {id:'dcdrag',t:'DC-dragning',tag:'dc',bilder:['DC-vägen inritad ✎','Genomföring tak'],
+  falt:[['dc_m','Tak → växelriktare, m','n'],['dc_genom','Genomföringar','n'],['dc_forl','Förläggning','s',['Dold, vindsutrymme','Synlig','Kabelränna','Rör på fasad','I mark']],['dc_grav','Grävning','seg',['Behövs ej','Kunden gräver','Vi gräver']]]},
+ {id:'placering',t:'Placering',tag:'b',bilder:['Väggen med måttsticka','Markerad placering ✎'],
+  falt:[['vagg','Väggtyp','s',['Lättbetong','Betong','Tegel','Regel och gips','Trä']],['brandcell','Separat brandcell inomhus','seg',['Ja','Nej']],['temp','Temperatur vintertid','seg',['Uppvärmt','Frostfritt','Kallt']],['brandskiva','Brandskiva bakom batteriet','seg',['Behövs','Behövs ej']]]},
+ {id:'acdrag',t:'AC-kabelväg',tag:'ac',bilder:['AC-vägen inritad ✎','Knepigt parti','Väggenomföring'],
+  falt:[['ac_m','Växelriktare → elcentral, m','n'],['vxr_matare','Växelriktare → elmätare, m','n'],['ac_genom','Väggenomföringar','n'],['ac_forl','Förläggning','s',['Kabelkanal inomhus','Rör på fasad','Dold','I mark']],['ac_grav','Grävning','seg',['Behövs ej','Kunden gräver','Vi gräver']]]},
+ {id:'elcentral',t:'Elcentral och mätare',tag:'ac',bilder:['Öppen central','Gruppförteckningen','Mätarskåpet','Huvudsäkringen','Elmätaren i närbild'],
+  falt:[['huvudsakring','Huvudsäkring','s',['16 A','20 A','25 A','35 A','50 A']],['matare','Mätarens fabrikat','s',['Kamstrup','Aidon','Landis+Gyr','Sagemcom','Annan']],['han','HAN-port','seg',['Aktiv','Ej aktiv','Vet ej']],
+   ['lediga','Lediga moduler i centralen','n'],['central_ok','Centralen i gott skick (märkt, N/PE-plats, inga brister)','seg',['Ja','Nej']],['central_brist','Om nej: vad','t'],
+   ['kapsling','Kapsling','s',['C – ingen kapsling (≥ 7 lediga, gott skick)','B – Arvako-kapsling','A – Arvako-central med ö-drift']],['vxr_kapsling','Växelriktare → kapsling/central, m','n']],
+  notis:'Lösning C kräver minst 7 lediga moduler och central i gott skick, annars B. A vid ö-drift.'},
+ {id:'natverk',t:'Nätverk och styrning',tag:'ac',bilder:['Routern','Vägen för nätverkskabel ✎'],
+  falt:[['dbm_vxr','Signal vid växelriktaren, dBm','n'],['dbm_pulse','Signal vid Pulse, dBm','n'],['natlosn','Lösning','seg',['Kabel från router','Extender','Wifi direkt']],['natkabel_m','Nätverkskabel, m','n'],['natkabel_vem','Vem drar kabeln','seg',['Kunden','Vi – prissätts']],
+   ['v230_vxr','230 V vid växelriktaren','seg',['Ja','Nej']],['v230_mat','230 V i mätarskåpet','seg',['Ja','Nej']],['wifi','Wifi-nät (2,4 GHz)','t']],
+  notis:'Mät med AirPort Utility. −60 och bättre håller, under −75 gör det inte. Allt ansluts på 2,4 GHz.'},
+ {id:'odrift',t:'Ö-drift (partiell backup)',tag:'ac',villkor:'odrift',bilder:['Gruppförteckningen, läsbar','Platsen för Arvako-centralen','Undercentral','Platsen för jordspett','Huvudjordningsskenan','Vägen i mark ✎'],
+  falt:[['od_typ','Centralens typ','s',['Proppcentral','Dvärgbrytare, äldre','Dvärgbrytare, nyare']],['od_jfb','Jordfelsbrytare i dag','s',['Ingen','Bara uttag och våtrum','Huvud-JFB','På alla grupper']],['od_under','Undercentraler (var)','t'],
+   ['od_plats','Plats för Arvako-centralen','s',['Bredvid centralen','Annan vägg']],['od_plats_m','Avstånd till centralen, m','n'],
+   ['od_vp','Värmepump: fabrikat och modell','t'],['od_vp_block','Ingång för extern blockering av elpatron','seg',['Ja','Nej','Vet ej']],['od_vp_jfb','Jordfelstyp enligt VP-manualen','seg',['A','F','B','Vet ej']],
+   ['od_grupper','Grupper i backup: namn · prio · skydd · area · faser · förlängning m (en per rad)','ta'],
+   ['jt_mark','Mark där spetten ska ned','s',['Gräs','Grus','Berg i dagen','Asfalt eller plattor']],['jt_ohm','Jordresistans, Ω (om uppmätt)','n'],['jt_lina','Kopparlina i mark, m','n'],['jt_pus','PUS → huvudjordningsskenan, m','n'],['jt_grav','Grävning','seg',['Behövs ej','Kunden','Vi']]]},
+ {id:'laddbox',t:'Laddbox',tag:'ac',villkor:'laddbox',bilder:['Platsen','Kabelvägen ✎'],
+  falt:[['lb_montage','Montage','seg',['Vägg','Stolpe']],['lb_plats','Placering','t'],['lb_m','Från central, m','n'],['lb_grav','Grävning','seg',['Behövs ej','Kunden','Vi']],['lb_bef','Befintlig laddbox','t']]},
+ {id:'avslut',t:'Avslut',tag:'b',bilder:['Övrigt'],
+  falt:[['onskemal','Kundens önskemål och förbehåll','ta'],['ovrigt','Övriga kommentarer (internt)','ta']]}
+];
+const TILLVAL=[['befintlig','Befintliga solceller'],['odrift','Ö-drift'],['laddbox','Laddbox']];
+
+/* ---------- lagring ---------- */
+let P={};try{const h=decodeURIComponent(location.hash.slice(1));if(h.startsWith('p='))P=JSON.parse(decodeURIComponent(escape(atob(h.slice(2).replace(/-/g,'+').replace(/_/g,'/')))))}catch(e){}
+const PID=(P.namn||'besok').replace(/\W+/g,'_');
+const NYCKEL='arvako-platsbesok:'+PID;
+let S={f:{},tv:{},bilder:[]};
+try{Object.assign(S,JSON.parse(localStorage.getItem(NYCKEL)||'{}'))}catch(e){}
+for(const k of ['namn','adress','tel','natagare'])if(P[k]&&!S.f[k])S.f[k]=P[k];
+if(P.tv&&!S._tv){S.tv=Object.assign({},P.tv);S._tv=1}
+const $=s=>document.querySelector(s);
+function status(t){$('#status').textContent=t}
+function spara(){try{localStorage.setItem(NYCKEL,JSON.stringify(S));status('Sparat i telefonen '+new Date().toLocaleTimeString('sv-SE',{hour:'2-digit',minute:'2-digit'})+' · '+S.bilder.length+' bilder')}catch(e){status('KUNDE INTE SPARA – tryck Skicka underlag nu')}}
+const DB=new Promise((res,rej)=>{const r=indexedDB.open('arvako-platsbesok',1);r.onupgradeneeded=()=>r.result.createObjectStore('b');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
+async function bSpara(k,v){const db=await DB;return new Promise((res,rej)=>{const t=db.transaction('b','readwrite');t.objectStore('b').put(v,PID+'|'+k);t.oncomplete=res;t.onerror=()=>rej(t.error)})}
+async function bLas(k){const db=await DB;return new Promise(res=>{const r=db.transaction('b').objectStore('b').get(PID+'|'+k);r.onsuccess=()=>res(r.result||null);r.onerror=()=>res(null)})}
+async function bBort(k){const db=await DB;return new Promise(res=>{const t=db.transaction('b','readwrite');t.objectStore('b').delete(PID+'|'+k);t.oncomplete=res})}
+function krymp(fil,max){return new Promise(res=>{const url=URL.createObjectURL(fil);const img=new Image();img.onload=()=>{let w=img.naturalWidth,h=img.naturalHeight;const s=Math.min(1,max/Math.max(w,h));w=Math.round(w*s);h=Math.round(h*s);const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);URL.revokeObjectURL(url);res(c.toDataURL('image/jpeg',0.82))};img.onerror=()=>{URL.revokeObjectURL(url);res(null)};img.src=url})}
+try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
+
+/* ---------- rendering ---------- */
+const esc=x=>String(x??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const syns=s=>!s.villkor||S.tv[s.villkor];
+function falt([k,lab,typ,val]){
+  const v=S.f[k]??'';
+  if(typ==='s')return `<div class="f"><label>${lab}</label><select data-k="${k}"><option value="">Välj…</option>${val.map(o=>`<option${o===v?' selected':''}>${esc(o)}</option>`).join('')}</select></div>`;
+  if(typ==='seg')return `<div class="f hel"><label>${lab}</label><div class="seg" data-seg="${k}">${val.map(o=>`<button type="button" class="${o===v?'pa':''}">${esc(o)}</button>`).join('')}</div></div>`;
+  if(typ==='ta')return `<div class="f hel"><label>${lab}</label><textarea data-k="${k}">${esc(v)}</textarea></div>`;
+  return `<div class="f${typ==='t'?' hel':''}"><label>${lab}</label><input data-k="${k}" ${typ==='n'?'inputmode="decimal"':''} value="${esc(v)}"></div>`;
+}
+function bildruta(sid,namn){return `<div class="bild" data-sid="${sid}" data-namn="${esc(namn)}">${esc(namn)}<input type="file" accept="image/*"></div>`}
+async function rita(){
+  const ut=[];
+  for(const s of STOPP){if(!syns(s))continue;
+    let h=`<section id="s-${s.id}"><h2>${s.t} <span class="tag ${s.tag}">${s.tag==='dc'?'DC':s.tag==='ac'?'AC':'Båda'}</span></h2>`;
+    if(s.tillval)h+=`<div class="f hel" style="margin-bottom:10px"><label>Ingår (styr vilka stopp som visas)</label><div class="seg tillval">${TILLVAL.map(([k,l])=>`<button type="button" data-tv="${k}" class="${S.tv[k]?'pa':''}">${l}</button>`).join('')}</div></div>`;
+    if(s.notis)h+=`<div class="notis">${s.notis}</div>`;
+    if(s.bilder){const egna=S.bilder.filter(b=>b.sid===s.id);
+      h+=`<div class="bilder">`+s.bilder.map(n=>egna.some(b=>b.namn===n)?'':bildruta(s.id,n)).join('')+egna.map(b=>`<div class="bild har" data-id="${b.id}"><img alt=""><span class="ok">sparad</span><button type="button" class="x" data-bort="${b.id}">×</button><span class="n">${b.id} · ${esc(b.namn)}</span></div>`).join('')+`<div class="bild plus" data-sid="${s.id}" data-namn="${esc(s.t)}">+ Ta bild<input type="file" accept="image/*"></div></div>`}
+    h+=`<div class="rader">${s.falt.map(falt).join('')}</div></section>`;ut.push(h)}
+  $('#flode').innerHTML=ut.join('');
+  $('#hopp').innerHTML=STOPP.filter(syns).map(s=>`<a href="#s-${s.id}" class="${S.bilder.some(b=>b.sid===s.id)?'klar':''}">${s.t.split(' (')[0]}</a>`).join('');
+  $('#sub').textContent=[S.f.namn,S.f.adress].filter(Boolean).join(' · ')||'Arvako Energi';
+  for(const el of document.querySelectorAll('.bild.har')){const d=await bLas(el.dataset.id);if(d)el.querySelector('img').src=d;else{el.querySelector('.ok').textContent='saknas';el.querySelector('.ok').style.background='#b42318'}}
+}
+document.addEventListener('input',e=>{const k=e.target.dataset&&e.target.dataset.k;if(k){S.f[k]=e.target.value;spara();if(k==='namn'||k==='adress')$('#sub').textContent=[S.f.namn,S.f.adress].filter(Boolean).join(' · ')}});
+document.addEventListener('change',async e=>{
+  if(e.target.dataset&&e.target.dataset.k){S.f[e.target.dataset.k]=e.target.value;spara();return}
+  if(e.target.type!=='file')return;const ruta=e.target.closest('.bild');const fil=e.target.files[0];if(!fil)return;
+  status('Sparar bilden …');const d=await krymp(fil,1800);if(!d){status('Bilden kunde inte läsas – försök igen');return}
+  let i=S.bilder.length+1;while(S.bilder.some(b=>b.id==='F'+i))i++;const id='F'+i;
+  try{await bSpara(id,d)}catch(err){status('KUNDE INTE SPARA BILDEN – lagringen är full?');alert('Bilden kunde inte sparas i telefonen. Tryck Skicka underlag nu så att inget går förlorat.');return}
+  const kontroll=await bLas(id);if(!kontroll){alert('Bilden sparades inte. Ta den igen.');return}
+  S.bilder.push({id,sid:ruta.dataset.sid,namn:ruta.dataset.namn,tid:new Date().toISOString()});spara();await rita();
+  const el=document.querySelector(`[data-id="${id}"]`);if(el)el.scrollIntoView({block:'nearest'});
+});
+document.addEventListener('click',async e=>{
+  const sb=e.target.closest('[data-seg] button');if(sb){const k=sb.parentNode.dataset.seg;S.f[k]=S.f[k]===sb.textContent?'':sb.textContent;sb.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('pa',b===sb&&S.f[k]));spara();return}
+  const tv=e.target.closest('[data-tv]');if(tv){S.tv[tv.dataset.tv]=!S.tv[tv.dataset.tv];spara();rita();return}
+  const bo=e.target.closest('[data-bort]');if(bo){if(!confirm('Ta bort bilden '+bo.dataset.bort+'?'))return;await bBort(bo.dataset.bort);S.bilder=S.bilder.filter(b=>b.id!==bo.dataset.bort);spara();rita();return}
+});
+
+/* ---------- ut ---------- */
+async function filer(){const ut=[];for(const b of S.bilder){const d=await bLas(b.id);if(!d)continue;const bin=atob(d.split(',')[1]);const a=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);ut.push(new File([a],`${b.id} ${b.namn.replace(/[^\wåäöÅÄÖ -]+/g,'')}.jpg`,{type:'image/jpeg'}))}return ut}
+$('#sparabilder').onclick=async()=>{
+  const fs=await filer();if(!fs.length){alert('Inga bilder än.');return}
+  if(navigator.canShare&&navigator.canShare({files:fs})){try{await navigator.share({files:fs});status('Bilderna delade');return}catch(e){if(e.name==='AbortError')return}}
+  for(const f of fs){const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();a.remove()}
+};
+$('#skicka').onclick=async()=>{
+  status('Bygger underlaget …');
+  const doc=document.documentElement.cloneNode(true);
+  doc.querySelector('body').classList.add('ut');doc.querySelectorAll('script,.dock,nav').forEach(x=>x.remove());
+  for(const el of doc.querySelectorAll('input,select,textarea')){
+    if(el.type==='file'){continue}
+    const live=document.querySelector(`[data-k="${el.dataset.k}"]`);const v=live?live.value:'';
+    const sp=document.createElement('div');sp.textContent=v||'—';sp.style.cssText='padding:4px 0;border-bottom:1px solid #ccc;min-height:22px;white-space:pre-wrap';el.replaceWith(sp)}
+  doc.querySelectorAll('.seg').forEach(g=>{const p=[...g.querySelectorAll('button.pa')].map(b=>b.textContent);g.innerHTML=`<div style="padding:4px 0;border-bottom:1px solid #ccc">${esc(p.join(', ')||'—')}</div>`});
+  doc.querySelectorAll('.bild:not(.har)').forEach(x=>x.remove());
+  for(const el of doc.querySelectorAll('.bild.har')){const d=await bLas(el.dataset.id);if(d)el.querySelector('img').src=d}
+  const st=document.createElement('p');st.style.cssText='font-size:12px;color:#6b7280';st.textContent='Platsbesök '+new Date().toLocaleString('sv-SE')+' · '+S.bilder.length+' bilder';doc.querySelector('header').appendChild(st);
+  const data=document.createElement('script');data.type='application/json';data.id='platsbesok-data';data.textContent=JSON.stringify({f:S.f,tv:S.tv,bilder:S.bilder.map(({id,sid,namn,tid})=>({id,sid,namn,tid}))});doc.querySelector('body').appendChild(data);
+  const html='<!doctype html>\n'+doc.outerHTML;const namn=`Platsbesok ${(S.f.namn||'kund')}.html`;
+  const fil=new File([html],namn,{type:'text/html'});
+  if(navigator.canShare&&navigator.canShare({files:[fil]})){try{await navigator.share({files:[fil],title:namn});status('Underlaget delat · allt finns kvar i telefonen');return}catch(e){if(e.name==='AbortError'){status('Avbrutet');return}}}
+  const a=document.createElement('a');a.href=URL.createObjectURL(fil);a.download=namn;document.body.appendChild(a);a.click();a.remove();status('Underlaget nedladdat · allt finns kvar i telefonen');
+};
+rita().then(spara);
+</script>
+</body>
+</html>
